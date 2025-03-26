@@ -1,35 +1,43 @@
 import os
 import numpy as np
+from tensorflow.keras.preprocessing import image
 import tensorflow as tf
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.models import load_model
 
-# Directorios de las imágenes
-base_dir = 'images'
-test_dir = os.path.join(base_dir, 'validation')
+# Directorio de las imágenes a predecir
+folder_path = 'images/breast_malignant'  # Cambia esto por la ruta de tu carpeta de imágenes
 
-# Crear directorios de prueba
-test_beign_dir = os.path.join(test_dir, 'breast_beign')
-test_malignant_dir = os.path.join(test_dir, 'breast_malignant')
+# Cargar el modelo
+model = tf.keras.models.load_model('model_improved.keras')
 
-# Parámetros
-img_width, img_height = 150, 150
-batch_size = 32
+# Obtener las clases desde el generador de imágenes
+# Asumimos que tienes acceso a la variable 'test_generator' o las clases de alguna forma
+class_names = {0: "bening", 1: "malingn"}
 
-# Generador de datos para prueba
-test_datagen = ImageDataGenerator(rescale=1.0/255.0)
-test_generator = test_datagen.flow_from_directory(
-    test_dir,
-    target_size=(img_width, img_height),
-    batch_size=batch_size,
-    class_mode='binary',
-    shuffle=False
-)
+# Recorrer todas las imágenes de la carpeta
+for filename in os.listdir(folder_path):
+    img_path = os.path.join(folder_path, filename)
+    # Comprobar si es una imagen (aquí puedes añadir más extensiones si es necesario)
+    if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+        try:
+            # Cargar la imagen y preprocesarla
+            img = image.load_img(img_path, target_size=(64, 64))  # Redimensionar a 150x150
+            img_array = image.img_to_array(img)  # Convertir la imagen a un array numpy
+            img_array = np.expand_dims(img_array, axis=0)  # Añadir una dimensión extra para representar el batch
 
-# Cargar el modelo guardado
-model = load_model('breast_cancer_cnn.h5')
+            # Normalizar la imagen (igual que durante el entrenamiento)
+            img_array /= 255.0
 
-# Evaluar el modelo
-test_loss, test_acc = model.evaluate(test_generator, steps=test_generator.samples // batch_size)
-print(f'Test accuracy: {test_acc:.4f}')
-print(f'Test loss: {test_loss:.4f}')
+            # Realizar la predicción
+            predictions = model.predict(img_array)
+
+            # Obtener la clase con la probabilidad más alta
+            predicted_class = np.argmax(predictions, axis=1)
+
+            # Obtener el nombre de la clase
+            predicted_label = class_names[predicted_class[0]]
+
+            # Imprimir el resultado
+            print(f"Imagen: {filename} - Clase predicha: {predicted_label}")
+
+        except Exception as e:
+            print(f"Error al procesar la imagen {filename}: {e}")
