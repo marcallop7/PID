@@ -3,3 +3,5 @@ images/**
 venv
 
 __pycache__
+
+*.h5
