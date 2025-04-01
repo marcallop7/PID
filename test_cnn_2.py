@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 
 # Modifica el archivo .h5 para eliminar 'groups' (si es necesario)
-with h5py.File('training_1.h5', 'r+') as f:
+with h5py.File('models/training_1.h5', 'r+') as f:
     model_config = f.attrs['model_config']  # Ya está decodificado, no hace falta .decode()
     model_config = model_config.replace('"groups": 1,', '')  # Eliminar 'groups': 1
     f.attrs.modify('model_config', model_config)  # Modificar el archivo
@@ -17,14 +17,14 @@ with h5py.File('training_1.h5', 'r+') as f:
 print("/" * 100)
 
 # Cargar el modelo modificado
-model = tf.keras.models.load_model('training_1.h5', compile=False)
+model = tf.keras.models.load_model('models/training_1.h5', compile=False)
 
 # Guardar la arquitectura en JSON
 model_json = model.to_json()
 
 # Reconstruir el modelo desde la arquitectura
 new_model = model_from_json(model_json)
-new_model.load_weights('training_1.h5')
+new_model.load_weights('models/training_1.h5')
 
 print("Modelo cargado y reconstruido correctamente")
 
