@@ -17,7 +17,7 @@ def preprocess_image(img_path, target_size=(256, 256)):  # Cambié el tamaño aq
         print(f"Error al procesar {img_path}: {e}")
         return None
     
-ruta = 'models/training_1.h5'
+ruta = 'models/training_1_40_binary_model.h5'
 
 contador_total = {0: 0, 1: 0, 2: 0}
 
