@@ -1,3 +1,4 @@
+import time
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from tkinterdnd2 import DND_FILES, TkinterDnD
@@ -204,9 +205,80 @@ class AnalizadorCancerDeMama:
         
         self.btn_eliminar.grid(row=0, column=2, pady=10, padx=10)
         self.actualizar_estadisticas()
+
+    def actualizar_resultado(self, resultado, color, index):
+        """Actualiza el resultado y guarda tanto el color como el texto original"""
+        self.canvas_resultado.itemconfig(self.circulo, fill=color)
+        
+        # Determinar el texto según el resultado original
+        if "benign" in resultado.lower():
+            resultado_texto = "Benigno"
+        elif "malign" in resultado.lower():
+            resultado_texto = "Maligno"
+        else:
+            resultado_texto = "Otro"
+        
+        self.label_resultado.config(text=f"Resultado: {resultado_texto}")
+        self.actualizar_estadisticas()
+
+        # Guardar tanto el color como el texto original del resultado
+        self.resultados_colores[self.imagenes_paths[index]] = (color, resultado)
+
+        # Resaltar la miniatura analizada
+        for i, widget in enumerate(self.frame_miniaturas.winfo_children()):
+            if i == index:
+                widget.config(bg=color)
+            elif widget.cget("bg") not in [self.benign_color, self.malignant_color, self.other_color]:
+                widget.config(bg=self.bg_color)
+    
+    def actualizar_resultado(self, resultado, color, index):
+        """Actualiza el resultado en la interfaz y guarda el color correspondiente"""
+        self.canvas_resultado.itemconfig(self.circulo, fill=color)
+        
+        # Determinar el texto según el resultado original
+        if "benign" in resultado.lower():
+            resultado_texto = "Benigno"
+        elif "malign" in resultado.lower():
+            resultado_texto = "Maligno"
+        else:
+            resultado_texto = "Otro"
+        
+        # Actualizar el texto del resultado en la interfaz
+        self.label_resultado.config(text=f"Resultado: {resultado_texto}")
+        self.actualizar_estadisticas()
+
+        # Guardar el color y el resultado asociado a la imagen analizada
+        self.resultados_colores[self.imagenes_paths[index]] = (color, resultado)
+
+        # Resaltar la miniatura analizada
+        for i, widget in enumerate(self.frame_miniaturas.winfo_children()):
+            if i == index:
+                widget.config(bg=color)
+            elif widget.cget("bg") not in [self.benign_color, self.malignant_color, self.other_color]:
+                widget.config(bg=self.bg_color)
+    
+    def actualizar_progreso(self, current):
+        """Actualiza la barra de progreso"""
+        progress = (current / len(self.imagenes_paths)) * 100
+        self.progress_var.set(progress)
+    
+    def finalizar_analisis(self):
+        self.analizando = False
+        self.btn_analizar.config(state=tk.NORMAL)
+        self.btn_pausar.config(state=tk.DISABLED, text="Pausar")
+        if self.current_image_index >= len(self.imagenes_paths):
+            messagebox.showinfo("Análisis completado", "Se han analizado todas las imágenes")
+        
+    def actualizar_estadisticas(self):
+        total = len(self.imagenes_paths)
+        self.label_total.config(text=f"Total imágenes: {total}")
+        self.label_benignas.config(text=f"Benignas: {self.resultados['Benignas']}")
+        self.label_malignas.config(text=f"Malignas: {self.resultados['Malignas']}")
+        self.label_otras.config(text=f"Otras: {self.resultados['Otras']}")
+    
     
     def mostrar_imagen_seleccionada(self, index):
-        """Muestra la imagen seleccionada en la vista previa y actualiza el resultado"""
+        """Muestra la imagen seleccionada y actualiza el resultado correctamente"""
         self.current_image_index = index
         try:
             path = self.imagenes_paths[index]
@@ -224,14 +296,29 @@ class AnalizadorCancerDeMama:
                 else:
                     widget.config(bg=self.bg_color)  # Resto normal
             
-            # Si la imagen ya fue analizada, actualizar el círculo
+            # Si la imagen ya fue analizada, actualizar el círculo y el texto
             if path in self.resultados_colores:
-                self.canvas_resultado.itemconfig(self.circulo, fill=self.resultados_colores[path])
-            
+                color, texto_original = self.resultados_colores[path]  # Ahora guardamos ambos
+                self.canvas_resultado.itemconfig(self.circulo, fill=color)
+                
+                # Extraer el texto descriptivo del resultado original
+                if "benign" in texto_original.lower():
+                    resultado_texto = "Benigno"
+                elif "malign" in texto_original.lower():
+                    resultado_texto = "Maligno"
+                else:
+                    resultado_texto = "Otro"
+                
+                self.label_resultado.config(text=f"Resultado: {resultado_texto}")
+            else:
+                # Si no ha sido analizada, mostrar estado neutral
+                self.canvas_resultado.itemconfig(self.circulo, fill="lightgray")
+                self.label_resultado.config(text="Resultado: No analizado")
+                
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo cargar la imagen\n{e}")
 
-
+    
     
     def eliminar_imagenes(self):
         """Elimina todas las imágenes cargadas y limpia la interfaz"""
@@ -272,25 +359,20 @@ class AnalizadorCancerDeMama:
 
     
     def iniciar_analisis(self):
-        """Inicia el análisis secuencial de las imágenes"""
         if not self.imagenes_paths:
             messagebox.showwarning("Advertencia", "No se han seleccionado imágenes para analizar")
             return
         
-        if self.analizando:
-            return
-        
-        self.limpiar_resultados() 
+        self.limpiar_resultados()
 
         self.analizando = True
-        self.resultados = {"Benignas": 0, "Malignas": 0, "Otras": 0}
-        self.current_image_index = 0
-        self.progress_var.set(0)
+        # Resetear solo si no estamos en medio de un análisis pausado
+        if self.current_image_index >= len(self.imagenes_paths):
+            self.current_image_index = 0
+            self.resultados = {"Benignas": 0, "Malignas": 0, "Otras": 0}
+        
         self.btn_analizar.config(state=tk.DISABLED)
         self.btn_pausar.config(state=tk.NORMAL, text="Pausar")
-        
-        
-        # Iniciar el análisis en un hilo separado para no bloquear la interfaz
         threading.Thread(target=self.analizar_secuencial, daemon=True).start()
     
     def limpiar_resultados(self):
@@ -314,28 +396,34 @@ class AnalizadorCancerDeMama:
 
 
     def pausar_analisis(self):
-        """Pausa o reanuda el análisis"""
-        if not self.analizando:
-            self.analizando = True
-            self.btn_pausar.config(text="Pausar")
-            threading.Thread(target=self.analizar_secuencial, daemon=True).start()
-        else:
+        """Pausa o reanuda el análisis - Versión corregida"""
+        if self.analizando:
+            # Si está analizando, pausar
             self.analizando = False
             self.btn_pausar.config(text="Reanudar")
+        else:
+            # Si está pausado, reanudar
+            self.analizando = True
+            self.btn_pausar.config(text="Pausar")
+            # Solo iniciamos un nuevo hilo si no hay uno activo
+            if self.current_image_index < len(self.imagenes_paths):
+                threading.Thread(target=self.analizar_secuencial, daemon=True).start()
+        
     
     def analizar_secuencial(self):
-        """Analiza las imágenes una por una mostrando los resultados en tiempo real"""
-        for i in range(self.current_image_index, len(self.imagenes_paths)):
+        """Analiza las imágenes una por una con control de pausa"""
+        while self.current_image_index < len(self.imagenes_paths):
             if not self.analizando:
-                break
+                # Pausa activada, salir del bucle
+                return
                 
-            path = self.imagenes_paths[i]
+            path = self.imagenes_paths[self.current_image_index]
             
-            # Actualizar la interfaz para mostrar la imagen actual
-            self.root.after(0, lambda idx=i: self.mostrar_imagen_seleccionada(idx))
+            # Actualizar interfaz
+            self.root.after(0, lambda idx=self.current_image_index: self.mostrar_imagen_seleccionada(idx))
             
             try:
-                # Analizar la imagen
+                # Analizar imagen
                 resultado, color = analisis_ia_modelo_1(path)
                 
                 # Actualizar resultados
@@ -346,68 +434,39 @@ class AnalizadorCancerDeMama:
                 else:
                     self.resultados["Otras"] += 1
                 
-                # Actualizar la interfaz en el hilo principal
-                self.root.after(0, self.actualizar_resultado, resultado, color, i)
+                # Actualizar interfaz
+                self.root.after(0, self.actualizar_resultado, resultado, color, self.current_image_index)
                 
-                # Pequeña pausa para que se pueda apreciar el cambio
-                import time
-                time.sleep(0.5)
+                time.sleep(0.5)  # Pequeña pausa para visualización
                 
             except Exception as e:
                 self.root.after(0, lambda: messagebox.showerror("Error", f"No se pudo analizar la imagen {path}\n{e}"))
             
             # Actualizar progreso
-            self.root.after(0, self.actualizar_progreso, i+1)
-            self.current_image_index = i + 1
+            self.current_image_index += 1
+            self.root.after(0, self.actualizar_progreso, self.current_image_index)
         
-        # Finalizar análisis
+        # Análisis completado
         self.root.after(0, self.finalizar_analisis)
     
-    def actualizar_resultado(self, resultado, color, index):
-        """Actualiza el resultado en la interfaz y guarda el color correspondiente"""
-        self.canvas_resultado.itemconfig(self.circulo, fill=color)
-        self.label_resultado.config(text=f"Resultado: {resultado.split(':')[-1].strip()}")
-        self.actualizar_estadisticas()
-
-        # Guardar el color asociado a la imagen analizada
-        self.resultados_colores[self.imagenes_paths[index]] = color
-
-        # Resaltar la miniatura analizada
-        for i, widget in enumerate(self.frame_miniaturas.winfo_children()):
-            if i == index:
-                widget.config(bg=color)  # Resaltar con el color del resultado
-            elif widget.cget("bg") not in [self.benign_color, self.malignant_color, self.other_color]:
-                widget.config(bg=self.bg_color)  # Restablecer otros si no tienen resultado
-
-    
-    def actualizar_progreso(self, current):
-        """Actualiza la barra de progreso"""
-        progress = (current / len(self.imagenes_paths)) * 100
-        self.progress_var.set(progress)
-    
-    def finalizar_analisis(self):
-        """Finaliza el proceso de análisis"""
-        self.analizando = False
-        self.btn_analizar.config(state=tk.NORMAL)
-        self.btn_pausar.config(state=tk.DISABLED)
-        messagebox.showinfo("Análisis completado", "Se han analizado todas las imágenes")
-    
-    def actualizar_estadisticas(self):
-        total = len(self.imagenes_paths)
-        self.label_total.config(text=f"Total imágenes: {total}")
-        self.label_benignas.config(text=f"Benignas: {self.resultados['Benignas']}")
-        self.label_malignas.config(text=f"Malignas: {self.resultados['Malignas']}")
-        self.label_otras.config(text=f"Otras: {self.resultados['Otras']}")
     
     def analizar_imagen(self):
-        """Método para análisis individual (compatibilidad)"""
         if not self.imagenes_paths:
             messagebox.showwarning("Advertencia", "No se ha seleccionado ninguna imagen")
             return
         
         resultado, color = self.analize(self.imagenes_paths[0])
         self.canvas_resultado.itemconfig(self.circulo, fill=color)
-        self.label_resultado.config(text=f"Resultado: {resultado.split(':')[-1].strip()}")
+        
+        if "benign" in resultado.lower():
+            resultado_texto = "Benigno"
+        elif "malign" in resultado.lower():
+            resultado_texto = "Maligno"
+        else:
+            resultado_texto = "Otro"
+        
+        self.label_resultado.config(text=f"Resultado: {resultado_texto}")
+        self.resultados_colores[self.imagenes_paths[0]] = (color, resultado)
         
         if sum(self.resultados.values()) == 0:
             if "benign" in resultado.lower():
@@ -437,4 +496,4 @@ class AnalizadorCancerDeMama:
 if __name__ == "__main__":
     root = TkinterDnD.Tk()
     app = AnalizadorCancerDeMama(root)
-    root.mainloop()
+    root.mainloop() 
