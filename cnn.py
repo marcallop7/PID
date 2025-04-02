@@ -19,6 +19,13 @@ def preprocess_image(img_path, target_size=(256, 256)):  # Cambié el tamaño aq
     except Exception as e:
         print(f"Error al procesar {img_path}: {e}")
         return None
+    
+ruta = 'models/training_1_40_binary_model.h5'
+
+contador_total = {0: 0, 1: 0, 2: 0}
+
+mapping = {0: "maligno", 1: "otro", 2: "benigno"}
+color = {0: "red", 1: "yellow", 2: "green"}
 
 def analisis_ia_modelo_1(image_path):
     ruta = 'models/training_1.h5'
