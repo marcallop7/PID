@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from tkinterdnd2 import DND_FILES, TkinterDnD
 from PIL import Image, ImageTk
-from cnn import analisis_ia_modelo_1
+from cnn import analisis_ia_modelo_2
 
 class AnalizadorCancerDeMama:
     def __init__(self, root):
@@ -128,7 +128,7 @@ class AnalizadorCancerDeMama:
         result, color = "Mensaje de ejemplo", "white"
         if not image_path:
             return "No se ha seleccionado ninguna imagen", self.error_color
-        result, color = analisis_ia_modelo_1(image_path)
+        result, color = analisis_ia_modelo_2(image_path)
         return result, color
     
     def drop_image(self, event):
