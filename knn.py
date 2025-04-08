@@ -63,10 +63,12 @@ def predict_file_by_path(path):
     results = perform_search(features_retrieved[0], training_indexed, max_results=5)
     labels_ret = [training_indexed["labels"][r[1]] for r in results]
 
-    return most_common(labels_ret)
+    label = most_common(labels_ret)
+    if label == "benign" or label in clasiffications["benign"]:
+        return label, "green"
+    else:
+        return label, "red"
 
-r = predict_file_by_path(r"C:\Users\lmher\Desktop\Informatica_4\PID\Trabajo\PID\images\binary_scenario\test\40X\malignant\SOB_M_DC-14-2523-40-014.png")
-print(r)
 
 def predict_folder(folder_path):
     print("[INFO] indexing file images BreaKHis dataset...")
