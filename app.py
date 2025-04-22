@@ -4,7 +4,7 @@ from tkinter import ttk, filedialog, messagebox
 from tkinterdnd2 import DND_FILES, TkinterDnD
 from PIL import Image, ImageTk
 from knn import predict_file_by_path
-from functions_cnn_original import predict_path_cnn
+from cnn import predict_path_cnn
 import threading
 
 class AnalizadorCancerDeMama:

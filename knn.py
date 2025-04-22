@@ -2,130 +2,96 @@ import numpy as np
 import json
 import os
 import cv2
-
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 from tensorflow.keras.models import Model, load_model # type: ignore
 from collections import Counter
+from sklearn.manifold import TSNE
 
 IMAGE_SIZE = (256, 256)
 LIMIT_IMAGES = 500
-# feature_path = "models\\features\\binary\\training_1_40_binary_feature.json"
+
 feature_path = "models\\features\\binary\\training_1_indexed_40.json"
 folder_path_benign = "images\\binary_scenario\\train\\40X\\benign"
 folder_path_malignant = "images\\binary_scenario\\test\\40X\\malignant"
 model_path = "models\\training_1.h5"
 
-clasiffications = {
+# Corrección de nombre
+classifications = {
     'benign': ['adenosis', 'fibrodenoma', 'phyllodes_tumor', 'tubular_adenoma'],
     'malignant': ['ductal_carcinoma', 'lobular_carcinoma', 'mucinous_carcinoma', 'papillary_carcinoma']
 }
 
-labels_binary = clasiffications.keys()
-labels_subclasses = [item for sublist in clasiffications.values() for item in sublist]
+labels_binary = classifications.keys()
+labels_subclasses = [item for sublist in classifications.values() for item in sublist]
 
-print("[INFO] loading auto encoder model...")
+print("[INFO] loading autoencoder model...")
 auto_encoder = load_model(model_path, compile=False)
 auto_encoder.load_weights(model_path)
+encoder = Model(inputs=auto_encoder.input, outputs=auto_encoder.get_layer("encoded").output)
 
-encoder = Model(inputs=auto_encoder.input,
-	outputs=auto_encoder.get_layer("encoded").output)
-
-
-# compute and return the euclidean distance between two vectors
 def euclidean(a, b):
-	return np.linalg.norm(a - b)
+    return np.linalg.norm(a - b)
 
 def perform_search(query_features, indexed_train, max_results=5):
     retrieved = []
-    for idx in range(0, len(indexed_train["features"])):
-        distance = euclidean(query_features, indexed_train["features"][idx])
+    for idx, feat in enumerate(indexed_train["features"]):
+        distance = euclidean(query_features, feat)
         retrieved.append((distance, idx))
-    retrieved = sorted(retrieved)[:max_results]
-    return retrieved
+    return sorted(retrieved)[:max_results]
 
 def most_common(arr):
     return Counter(arr).most_common(1)[0][0]
 
 def predict_file_by_path(path):
-    print("[INFO] load test images BreaKHis dataset...")
+    print("[INFO] load test image...")
     image = cv2.imread(path)
     image = cv2.resize(image, IMAGE_SIZE)
-
-    print("[INFO] normalization...")
     test_x = np.array([image]).astype("float32") / 255.0
 
-    # quantify the contents of our input images using the encoder
-    print("[INFO] encoding images...")
+    print("[INFO] encoding image...")
     features_retrieved = encoder.predict(test_x)
 
     with open(feature_path) as f:
         training_indexed = json.load(f)
 
-    results = perform_search(features_retrieved[0], training_indexed, max_results=5)
+    results = perform_search(features_retrieved[0], training_indexed)
     labels_ret = [training_indexed["labels"][r[1]] for r in results]
-
     label = most_common(labels_ret)
-    if label == "benign" or label in clasiffications["benign"]:
-        return label, "green"
-    else:
-        return label, "red"
 
+    color = "green" if label in classifications["benign"] else "red"
+    return label, color
 
 def predict_folder(folder_path):
-    print("[INFO] indexing file images BreaKHis dataset...")
-    dataset = []
-    for file in os.listdir(folder_path):
-        dataset.append(os.path.join(folder_path, file))
-
-    print("test len to retrieving:", len(dataset))
-    print("[INFO] load test images BreaKHis dataset...")
-    #  load images
-    images = []
-    for image_path in dataset[:LIMIT_IMAGES]:
-        image = cv2.imread(image_path)
-        image = cv2.resize(image, IMAGE_SIZE)
-        images.append(image)
-
-    print("[INFO] normalization...")
+    dataset = [os.path.join(folder_path, f) for f in os.listdir(folder_path)][:LIMIT_IMAGES]
+    images = [cv2.resize(cv2.imread(img), IMAGE_SIZE) for img in dataset]
     test_x = np.array(images).astype("float32") / 255.0
-
-    # quantify the contents of our input images using the encoder
-    print("[INFO] encoding images...")
     features_retrieved = encoder.predict(test_x)
 
     with open(feature_path) as f:
         training_indexed = json.load(f)
 
-    query_indexes = list(range(0, test_x.shape[0]))
-
     res = dict(benign=0, malignant=0)
-    for i in query_indexes:
+    for i in range(len(test_x)):
         queryFeatures = features_retrieved[i]
-        results = perform_search(queryFeatures, training_indexed, max_results=5)
-        # Las etiquetas de los más cercanos
+        results = perform_search(queryFeatures, training_indexed)
         labels_ret = [training_indexed["labels"][r[1]] for r in results]
         label = most_common(labels_ret)
         res[label] += 1
-
     return res
 
-predict_folder_benign = predict_folder(folder_path_benign)
-predict_folder_malignant = predict_folder(folder_path_malignant)
-
 def matriz_dispersion(res_benign, res_malignant):
-    # Extraemos los valores
-    TP = res_malignant['malignant']  # verdaderos positivos
-    TN = res_benign['benign']        # verdaderos negativos
-    FP = res_benign['malignant']     # falsos positivos
-    FN = res_malignant['benign']     # falsos negativos
+    TP = res_malignant.get('malignant', 0)
+    TN = res_benign.get('benign', 0)
+    FP = res_benign.get('malignant', 0)
+    FN = res_malignant.get('benign', 0)
 
-    # Mostrar matriz de dispersión
-    print(f"{'':12}|{'benign':>10}   {'malignant':>10}")
+    print(f"\n{'':12}|{'benign':>10}   {'malignant':>10}")
     print("-" * 34)
     print(f"{'benign':12}|{TN:>10}   {FP:>10}")
     print(f"{'malignant':12}|{FN:>10}   {TP:>10}")
     print("\nMedidas de evaluación:")
 
-    # Cálculos
     total = TP + TN + FP + FN
     accuracy = (TP + TN) / total if total else 0
     precision = TP / (TP + FP) if (TP + FP) else 0
@@ -133,11 +99,90 @@ def matriz_dispersion(res_benign, res_malignant):
     specificity = TN / (TN + FP) if (TN + FP) else 0
     f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) else 0
 
-    # Mostrar métricas
     print(f"{'Accuracy':20}: {accuracy:.2f}")
     print(f"{'Precision (malignant)':20}: {precision:.2f}")
     print(f"{'Recall (malignant)':20}: {recall:.2f}")
     print(f"{'Specificity (benign)':20}: {specificity:.2f}")
     print(f"{'F1 Score':20}: {f1_score:.2f}")
 
-matriz_dispersion(predict_folder_benign, predict_folder_malignant)
+def visualize_features_from_json(json_path, save=False, output_folder="outputs"):
+    if not os.path.exists(json_path):
+        print("El archivo no existe.")
+        return
+
+    with open(json_path, "r") as f:
+        data = json.load(f)
+        filename = os.path.basename(f.name)
+        name_without_ext = os.path.splitext(filename)[0]
+
+    features = np.array(data["features"])
+    labels = np.array(data["labels"])
+
+    # Mostrar vector de características individuales como barras
+    # plt.figure(figsize=(10, 4))
+    # plt.title("Características (vector latente) de una imagen")
+    # plt.bar(range(len(features[0])), features[0])
+    # plt.xlabel("Índice del vector")
+    # plt.ylabel("Valor")
+    # plt.grid(True)
+    # plt.tight_layout()
+    # plt.show()
+
+    # Si hay muchas, hacer PCA
+    if len(features) > 2:
+        pca = PCA(n_components=2)
+        reduced = pca.fit_transform(features)
+
+        # plt.figure(figsize=(6, 6))
+        for lbl in np.unique(labels):
+            idxs = labels == lbl
+            plt.scatter(reduced[idxs, 0], reduced[idxs, 1], label=lbl, alpha=0.6)
+        # plt.title("Visualización 2D de características (PCA)")
+        # plt.legend()
+        # plt.grid(True)
+        # plt.tight_layout()
+        # plt.show()
+
+    if save:
+        path_img = os.path.join(output_folder, name_without_ext + "_visualization.png")
+        plt.savefig(path_img)
+        print(f"[INFO] Imagen guardada en: {path_img}")
+    else:
+        plt.show()
+
+def visualize_features_tsne(json_path, save=False, output_folder="outputs"):
+    if not os.path.exists(json_path):
+        print("El archivo no existe.")
+        return
+
+    with open(json_path, "r") as f:
+        data = json.load(f)
+        filename = os.path.basename(f.name)
+        name_without_ext = os.path.splitext(filename)[0]
+
+    features = np.array(data["features"])
+    labels = np.array(data["labels"])
+
+    print("[INFO] Reducción de dimensionalidad con t-SNE...")
+    tsne = TSNE(n_components=2, perplexity=30, n_iter=1000, random_state=42)
+    reduced = tsne.fit_transform(features)
+
+    # Crear la carpeta si no existe
+    if save and not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    plt.figure(figsize=(7, 7))
+    for lbl in np.unique(labels):
+        idxs = labels == lbl
+        plt.scatter(reduced[idxs, 0], reduced[idxs, 1], label=lbl, alpha=0.6)
+    # plt.title("t-SNE: Visualización de características latentes")
+    # plt.legend()
+    # plt.grid(True)
+    # plt.tight_layout()
+
+    if save:
+        path_img = os.path.join(output_folder, name_without_ext + "_tsne_visualization.png")
+        plt.savefig(path_img)
+        print(f"[INFO] Imagen guardada en: {path_img}")
+    else:
+        plt.show()

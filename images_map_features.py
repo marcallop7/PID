@@ -1,4 +1,4 @@
-from knn_2 import visualize_features_from_json, visualize_features_tsne
+from knn import visualize_features_from_json, visualize_features_tsne
 import os
 
 folder_path = "models\\features\\binary"
