@@ -1,13 +1,9 @@
 from knn import predict_folder
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, f1_score, precision_score, recall_score
-import numpy as np
+from sklearn.metrics import confusion_matrix, accuracy_score, f1_score, precision_score, recall_score
 
 def show_confusion_matrix_from_dicts(pred_benign_dict, pred_malign_dict, class_labels):
-    """
-    Muestra la matriz de confusión y las métricas de evaluación.
-    """
     # Construir listas de clases verdaderas y predichas
     y_true = []
     y_pred = []

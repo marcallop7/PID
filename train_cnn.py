@@ -1,6 +1,5 @@
-import tensorflow as tf
-from tensorflow.keras import layers, models, optimizers, regularizers
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras import layers, models, optimizers, regularizers # type: ignore
+from tensorflow.keras.preprocessing.image import ImageDataGenerator # type: ignore
 import os
 
 
@@ -86,10 +85,6 @@ def train_model(data_dir, num_classes=2, input_shape=(128, 128, 3), batch_size=3
 
 
 def get_available_filename(base_name, extension=".h5", directory="."):
-    """
-    Genera un nombre de archivo disponible en el directorio.
-    Ejemplo: si 'modelo_cnn_completo.h5' existe, devuelve 'modelo_cnn_completo_1.h5'
-    """
     filename = f"{base_name}{extension}"
     i = 1
     while os.path.exists(os.path.join(directory, filename)):

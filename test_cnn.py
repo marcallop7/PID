@@ -6,15 +6,9 @@ from sklearn.metrics import confusion_matrix
 import seaborn as sns
 
 def load_trained_model(model_path):
-    """
-    Carga el modelo previamente entrenado desde un archivo .h5.
-    """
     return load_model(model_path)
 
 def evaluate_model_on_directory(model, data_dir, target_size=(128, 128), batch_size=32):
-    """
-    Evaluar el modelo en un conjunto de imágenes dentro de un directorio.
-    """
     # Configuración de aumento de datos para predicción
     test_datagen = ImageDataGenerator(rescale=1./255)
     
@@ -42,9 +36,6 @@ def evaluate_model_on_directory(model, data_dir, target_size=(128, 128), batch_s
     show_confusion_matrix(true_classes, predicted_classes, class_labels)
 
 def show_confusion_matrix(true_classes, predicted_classes, class_labels):
-    """
-    Muestra la matriz de confusión y las métricas de evaluación.
-    """
     from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
     cm = confusion_matrix(true_classes, predicted_classes)
