@@ -54,7 +54,8 @@ class AnalizadorCancerDeMama:
         # Selector de modelo
         ttk.Label(self.frame_main, text="Modelo:", background=self.bg_color).grid(row=0, column=0, sticky="e", padx=(0, 5))
         self.combo_modelo = ttk.Combobox(self.frame_main, 
-                                         textvariable=self.modelo_actual, values=["KNN", "CNN", "CNN (40x)", "CNN (100x)", "CNN (200x)", "CNN (400x)"], 
+                                         textvariable=self.modelo_actual, values=["KNN", "KNN (40x)", "KNN (100x)", "KNN (200x)", "KNN (400x)", 
+                                                                                  "CNN", "CNN (40x)", "CNN (100x)", "CNN (200x)", "CNN (400x)"], 
                                          state="readonly", 
                                          style="CustomCombobox.TCombobox")
         self.combo_modelo.grid(row=0, column=1, sticky="w", pady=10)
@@ -296,7 +297,11 @@ class AnalizadorCancerDeMama:
             try:
                 modelo = self.modelo_actual.get()
                 if modelo == "KNN":
-                    resultado, color = predict_file_by_path(path)
+                    if "(" in modelo and ")" in modelo:
+                        ampliacion = modelo.split("(")[1].split(")")[0]
+                    else:
+                        ampliacion = None
+                    resultado, color = predict_file_by_path(path, ampliacion)
                 elif modelo.startswith("CNN"):
                     if "(" in modelo and ")" in modelo:
                         ampliacion = modelo.split("(")[1].split(")")[0]

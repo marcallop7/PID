@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow.keras import layers, models, optimizers, regularizers
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import os
-import shutil
+
 
 def build_cnn_model(input_shape=(128, 128, 3), num_classes=2):
     model = models.Sequential()

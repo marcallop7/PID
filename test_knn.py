@@ -1,35 +1,75 @@
 from knn import predict_folder
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, f1_score, precision_score, recall_score
+import numpy as np
 
-def matriz_dispersion(res_benign, res_malignant):
-    # Extraemos los valores
-    TP = res_malignant['malignant']  # verdaderos positivos
-    TN = res_benign['benign']        # verdaderos negativos
-    FP = res_benign['malignant']     # falsos positivos
-    FN = res_malignant['benign']     # falsos negativos
+def show_confusion_matrix_from_dicts(pred_benign_dict, pred_malign_dict, class_labels):
+    """
+    Muestra la matriz de confusión y las métricas de evaluación.
+    """
+    # Construir listas de clases verdaderas y predichas
+    y_true = []
+    y_pred = []
 
-    # Mostrar matriz de dispersión
-    print(f"{'':12}|{'benign':>10}   {'malignant':>10}")
-    print("-" * 34)
-    print(f"{'benign':12}|{TN:>10}   {FP:>10}")
-    print(f"{'malignant':12}|{FN:>10}   {TP:>10}")
-    print("\nMedidas de evaluación:")
+    # Procesar predicciones para benignos
+    y_true += ["benign"] * sum(pred_benign_dict.values())
+    y_pred += (["benign"] * pred_benign_dict["benign"]) + (["malignant"] * pred_benign_dict["malignant"])
 
-    # Cálculos
-    total = TP + TN + FP + FN
-    accuracy = (TP + TN) / total if total else 0
-    precision = TP / (TP + FP) if (TP + FP) else 0
-    recall = TP / (TP + FN) if (TP + FN) else 0
-    specificity = TN / (TN + FP) if (TN + FP) else 0
-    f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) else 0
+    # Procesar predicciones para malignos
+    y_true += ["malignant"] * sum(pred_malign_dict.values())
+    y_pred += (["benign"] * pred_malign_dict["benign"]) + (["malignant"] * pred_malign_dict["malignant"])
 
-    # Mostrar métricas
-    print(f"{'Accuracy':20}: {accuracy:.2f}")
-    print(f"{'Precision (malignant)':20}: {precision:.2f}")
-    print(f"{'Recall (malignant)':20}: {recall:.2f}")
-    print(f"{'Specificity (benign)':20}: {specificity:.2f}")
-    print(f"{'F1 Score':20}: {f1_score:.2f}")
+    # Obtener matriz de confusión
+    cm = confusion_matrix(y_true, y_pred, labels=list(class_labels.keys()))
+
+    # Crear figura con dos columnas: matriz y texto
+    fig, (ax_matrix, ax_text) = plt.subplots(1, 2, figsize=(12, 6), gridspec_kw={'width_ratios': [3, 1]})
+
+    # Mostrar matriz de confusión
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
+                xticklabels=class_labels.values(),
+                yticklabels=class_labels.values(),
+                ax=ax_matrix)
+
+    ax_matrix.set_xlabel('Predicciones')
+    ax_matrix.set_ylabel('Valores Reales')
+    ax_matrix.set_title('Matriz de Confusión')
+
+    # Calcular métricas
+    acc = accuracy_score(y_true, y_pred)
+    f1 = f1_score(y_true, y_pred, pos_label="malignant", average='binary')
+    prec = precision_score(y_true, y_pred, pos_label="malignant", average='binary')
+    recall = recall_score(y_true, y_pred, pos_label="malignant", average='binary')
+
+    # Mostrar métricas en el segundo subplot
+    metrics_text = (f"Accuracy: {acc:.2f}\n"
+                    f"F1 Score: {f1:.2f}\n"
+                    f"Precision: {prec:.2f}\n"
+                    f"Recall: {recall:.2f}")
+    
+    ax_text.axis('off')
+    ax_text.text(0, 0.8, metrics_text, fontsize=12, va='top', ha='left',
+                 bbox=dict(facecolor='white', edgecolor='black'))
+
+    plt.tight_layout()
+    plt.show()
 
 
-predict_folder_benign = predict_folder(folder_path_benign)
-predict_folder_malignant = predict_folder(folder_path_malignant)
-matriz_dispersion(predict_folder_benign, predict_folder_malignant)
+if __name__ == "__main__":
+    for magnificient in [None]:
+        if magnificient is not None:
+            folder_path_benign = f"images\\binary_scenario\\test\\{magnificient}x\\benign"
+            folder_path_malignant = f"images\\binary_scenario\\test\\{magnificient}x\\malignant"
+
+            predict_folder_benign = predict_folder(folder_path_benign, f"{magnificient}x")
+            predict_folder_malignant = predict_folder(folder_path_malignant, f"{magnificient}x")
+        else: 
+            folder_path_benign = f"images\\binary_scenario_merged\\test\\benign"
+            folder_path_malignant = f"images\\binary_scenario_merged\\test\\malignant"
+        
+            predict_folder_benign = predict_folder(folder_path_benign)
+            predict_folder_malignant = predict_folder(folder_path_malignant)
+        class_labels = {"benign": "Benigno", "malignant": "Maligno"}
+
+        show_confusion_matrix_from_dicts(predict_folder_benign, predict_folder_malignant, class_labels)

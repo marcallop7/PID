@@ -9,11 +9,9 @@ from collections import Counter
 from sklearn.manifold import TSNE
 
 IMAGE_SIZE = (256, 256)
-LIMIT_IMAGES = 500
+LIMIT_IMAGES = None
 
-feature_path = "models\\features\\binary\\training_1_indexed_40.json"
-folder_path_benign = "images\\binary_scenario\\train\\40X\\benign"
-folder_path_malignant = "images\\binary_scenario\\test\\40X\\malignant"
+
 model_path = "models\\training_1.h5"
 
 # Corrección de nombre
@@ -43,7 +41,12 @@ def perform_search(query_features, indexed_train, max_results=5):
 def most_common(arr):
     return Counter(arr).most_common(1)[0][0]
 
-def predict_file_by_path(path):
+def predict_file_by_path(path, magnificient = None):
+    if magnificient is None:
+        feature_path = "models\\features\\binary\\training_1_all_binary_feature.json"
+    else:    
+        feature_path = f"models\\features\\binary\\training_1_{magnificient}_binary_feature.json"
+
     print("[INFO] load test image...")
     image = cv2.imread(path)
     image = cv2.resize(image, IMAGE_SIZE)
@@ -59,11 +62,18 @@ def predict_file_by_path(path):
     labels_ret = [training_indexed["labels"][r[1]] for r in results]
     label = most_common(labels_ret)
 
-    color = "green" if label in classifications["benign"] else "red"
+    color = "green" if label in classifications["benign"] or label == "benign" else "red"
     return label, color
 
-def predict_folder(folder_path):
-    dataset = [os.path.join(folder_path, f) for f in os.listdir(folder_path)][:LIMIT_IMAGES]
+def predict_folder(folder_path, magnificient = None):
+    if magnificient is None:
+        feature_path = "models\\features\\binary\\training_1_all_binary_feature.json"
+    else:    
+        feature_path = f"models\\features\\binary\\training_1_{magnificient}_binary_feature.json"
+
+    dataset = [os.path.join(folder_path, f) for f in os.listdir(folder_path)]
+    if LIMIT_IMAGES is not None:
+        dataset = dataset[:LIMIT_IMAGES]
     images = [cv2.resize(cv2.imread(img), IMAGE_SIZE) for img in dataset]
     test_x = np.array(images).astype("float32") / 255.0
     features_retrieved = encoder.predict(test_x)
@@ -118,16 +128,6 @@ def visualize_features_from_json(json_path, save=False, output_folder="outputs")
     features = np.array(data["features"])
     labels = np.array(data["labels"])
 
-    # Mostrar vector de características individuales como barras
-    # plt.figure(figsize=(10, 4))
-    # plt.title("Características (vector latente) de una imagen")
-    # plt.bar(range(len(features[0])), features[0])
-    # plt.xlabel("Índice del vector")
-    # plt.ylabel("Valor")
-    # plt.grid(True)
-    # plt.tight_layout()
-    # plt.show()
-
     # Si hay muchas, hacer PCA
     if len(features) > 2:
         pca = PCA(n_components=2)
@@ -137,11 +137,6 @@ def visualize_features_from_json(json_path, save=False, output_folder="outputs")
         for lbl in np.unique(labels):
             idxs = labels == lbl
             plt.scatter(reduced[idxs, 0], reduced[idxs, 1], label=lbl, alpha=0.6)
-        # plt.title("Visualización 2D de características (PCA)")
-        # plt.legend()
-        # plt.grid(True)
-        # plt.tight_layout()
-        # plt.show()
 
     if save:
         path_img = os.path.join(output_folder, name_without_ext + "_visualization.png")
@@ -175,10 +170,6 @@ def visualize_features_tsne(json_path, save=False, output_folder="outputs"):
     for lbl in np.unique(labels):
         idxs = labels == lbl
         plt.scatter(reduced[idxs, 0], reduced[idxs, 1], label=lbl, alpha=0.6)
-    # plt.title("t-SNE: Visualización de características latentes")
-    # plt.legend()
-    # plt.grid(True)
-    # plt.tight_layout()
 
     if save:
         path_img = os.path.join(output_folder, name_without_ext + "_tsne_visualization.png")
