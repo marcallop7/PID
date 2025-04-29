@@ -297,7 +297,6 @@ class AnalizadorCancerDeMama:
             try:
                 modelo = self.modelo_actual.get()
                 if modelo.startswith("KNN"):
-                    print(modelo)
                     if "(" in modelo and ")" in modelo:
                         ampliacion = modelo.split("(")[1].split(")")[0]
                     else:
