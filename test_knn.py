@@ -3,7 +3,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, accuracy_score, f1_score, precision_score, recall_score
 
-def show_confusion_matrix_from_dicts(pred_benign_dict, pred_malign_dict, class_labels):
+def save_metrics_to_file(file_path, model_name, accuracy, precision, recall, f1_score):
+    with open(file_path, "a") as f:
+        f.write(f"{model_name}\t{accuracy:.2f}\t{precision:.2f}\t{recall:.2f}\t{f1_score:.2f}\n")
+
+def show_confusion_matrix_from_dicts(pred_benign_dict, pred_malign_dict, class_labels, model_name):
     # Construir listas de clases verdaderas y predichas
     y_true = []
     y_pred = []
@@ -51,6 +55,9 @@ def show_confusion_matrix_from_dicts(pred_benign_dict, pred_malign_dict, class_l
     plt.tight_layout()
     plt.show()
 
+    # Guardar métricas en el archivo
+    save_metrics_to_file("model_metrics.txt", model_name, acc, prec, recall, f1)
+
 
 if __name__ == "__main__":
     for magnificient in [40, 100, 200, 400, None]:
@@ -60,12 +67,16 @@ if __name__ == "__main__":
 
             predict_folder_benign = predict_folder(folder_path_benign, f"{magnificient}x")
             predict_folder_malignant = predict_folder(folder_path_malignant, f"{magnificient}x")
+            model_name = f"knn_{magnificient}x"
         else: 
             folder_path_benign = f"images\\binary_scenario_merged\\test\\benign"
             folder_path_malignant = f"images\\binary_scenario_merged\\test\\malignant"
         
             predict_folder_benign = predict_folder(folder_path_benign)
             predict_folder_malignant = predict_folder(folder_path_malignant)
+            model_name = "knn_all"
+
         class_labels = {"benign": "Benigno", "malignant": "Maligno"}
 
-        show_confusion_matrix_from_dicts(predict_folder_benign, predict_folder_malignant, class_labels)
+        # Mostrar matriz de confusión y guardar métricas
+        show_confusion_matrix_from_dicts(predict_folder_benign, predict_folder_malignant, class_labels, model_name)

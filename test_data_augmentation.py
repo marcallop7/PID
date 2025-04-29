@@ -42,14 +42,29 @@ def load_images_with_labels(data_dir, target_size=(128, 128), num_variations=5):
             labels.extend([class_to_idx[class_name]] * num_variations)
     return np.array(images), np.array(labels), class_to_idx
 
-def evaluate_model_on_augmented_data(model, data_dir, target_size=(128, 128), num_variations=5):
+def save_metrics_to_file(file_path, model_name, accuracy, precision, recall, f1_score):
+    with open(file_path, "a") as f:  # Usa "a" para agregar contenido al archivo sin borrar lo anterior
+        f.write(f"{model_name}\t{accuracy:.2f}\t{precision:.2f}\t{recall:.2f}\t{f1_score:.2f}\n")
+
+
+def evaluate_model_on_augmented_data(model, data_dir, target_size=(128, 128), num_variations=5, model_name=""):
     images, labels, class_to_idx = load_images_with_labels(data_dir, target_size, num_variations)
     images = images.astype("float32") / 255.0
 
     predictions = model.predict(images, verbose=1)
     predicted_classes = np.argmax(predictions, axis=1)
 
+    # Calcular métricas
+    acc = accuracy_score(labels, predicted_classes)
+    f1 = f1_score(labels, predicted_classes, average='weighted')  # Cambiado a 'weighted' para múltiples clases
+    prec = precision_score(labels, predicted_classes, average='weighted')
+    recall = recall_score(labels, predicted_classes, average='weighted')
+
+    # Mostrar la matriz de confusión
     show_confusion_matrix(labels, predicted_classes, class_to_idx)
+
+    # Guardar métricas en el archivo
+    save_metrics_to_file("model_metrics.txt", model_name, acc, prec, recall, f1)
 
 def show_confusion_matrix(true_classes, predicted_classes, class_labels):
     cm = confusion_matrix(true_classes, predicted_classes)
@@ -64,29 +79,20 @@ def show_confusion_matrix(true_classes, predicted_classes, class_labels):
     ax_matrix.set_ylabel('Valores Reales')
     ax_matrix.set_title('Matriz de Confusión')
 
-    acc = accuracy_score(true_classes, predicted_classes)
-    f1 = f1_score(true_classes, predicted_classes, average='binary')
-    prec = precision_score(true_classes, predicted_classes, average='binary')
-    recall = recall_score(true_classes, predicted_classes, average='binary')
-
-    metrics_text = (f"Accuracy: {acc:.2f}\n"
-                    f"F1 Score: {f1:.2f}\n"
-                    f"Precision: {prec:.2f}\n"
-                    f"Recall: {recall:.2f}")
-
-    ax_text.axis('off')
-    ax_text.text(0, 0.8, metrics_text, fontsize=12, va='top', ha='left',
-                 bbox=dict(facecolor='white', edgecolor='black'))
-
     plt.tight_layout()
-    plt.show()
+    plt.show(block=False)
+    plt.pause(2)
+    plt.close()
 
 if __name__ == "__main__":
+
     for MAGNIFICIENT_MODEL in [40, 100, 200, 400, None]:
         if MAGNIFICIENT_MODEL is not None:
             model_path = f"modelo_cnn_{MAGNIFICIENT_MODEL}x.h5"
+            model_name = f"modelo_cnn_{MAGNIFICIENT_MODEL}x_aug"
         else:
             model_path = "modelo_cnn_all.h5"
+            model_name = "modelo_cnn_all_aug"
 
         MAGNIFICIENT_TEST = 40
         if MAGNIFICIENT_TEST is not None:
@@ -95,4 +101,4 @@ if __name__ == "__main__":
             test_data_dir = "./images/binary_scenario_merged/test"
 
         model = load_trained_model(model_path)
-        evaluate_model_on_augmented_data(model, test_data_dir)
+        evaluate_model_on_augmented_data(model, test_data_dir, model_name=model_name)

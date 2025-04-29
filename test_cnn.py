@@ -2,42 +2,52 @@ import numpy as np
 from tensorflow.keras.models import load_model # type: ignore
 from tensorflow.keras.preprocessing.image import ImageDataGenerator # type: ignore
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix
 import seaborn as sns
+from sklearn.metrics import confusion_matrix, accuracy_score, f1_score, precision_score, recall_score
 
 def load_trained_model(model_path):
     return load_model(model_path)
 
-def evaluate_model_on_directory(model, data_dir, target_size=(128, 128), batch_size=32):
-    # Configuración de aumento de datos para predicción
+def save_metrics_to_file(file_path, model_name, accuracy, precision, recall, f1_score):
+    with open(file_path, "a") as f:  # Usa "a" para agregar contenido al archivo
+        f.write(f"{model_name}\t{accuracy:.2f}\t{precision:.2f}\t{recall:.2f}\t{f1_score:.2f}\n")
+
+
+def evaluate_model_on_directory(model, data_dir, target_size=(128, 128), batch_size=32, model_name=""):
+    """
+    Evaluar el modelo en un conjunto de imágenes dentro de un directorio.
+    """
     test_datagen = ImageDataGenerator(rescale=1./255)
-    
-    # Generador de datos
     test_generator = test_datagen.flow_from_directory(
         data_dir,
         target_size=target_size,
         batch_size=batch_size,
         class_mode='categorical',
-        shuffle=False  # No mezclar las imágenes para mantener el orden
+        shuffle=False
     )
     
-    # Realizamos la predicción sobre el conjunto de prueba
     predictions = model.predict(test_generator, verbose=1)
     predicted_classes = np.argmax(predictions, axis=1)
-    
-    # Obtener las clases reales
     true_classes = test_generator.classes
 
-    # Mostrar las predicciones con los nombres de las imágenes
-    class_labels = test_generator.class_indices
-    class_labels = {v: k for k, v in class_labels.items()}  # Invertir el diccionario
+    # Calcular métricas
+    acc = accuracy_score(true_classes, predicted_classes)
+    f1 = f1_score(true_classes, predicted_classes, average='weighted')  # Cambiado a 'weighted' para múltiples clases
+    prec = precision_score(true_classes, predicted_classes, average='weighted')
+    recall = recall_score(true_classes, predicted_classes, average='weighted')
 
     # Mostrar la matriz de confusión
+    class_labels = test_generator.class_indices
+    class_labels = {v: k for k, v in class_labels.items()}  # Invertir el diccionario
     show_confusion_matrix(true_classes, predicted_classes, class_labels)
 
-def show_confusion_matrix(true_classes, predicted_classes, class_labels):
-    from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+    # Guardar métricas en el archivo
+    save_metrics_to_file("model_metrics.txt", model_name, acc, prec, recall, f1)
 
+def show_confusion_matrix(true_classes, predicted_classes, class_labels):
+    """
+    Muestra la matriz de confusión y las métricas de evaluación.
+    """
     cm = confusion_matrix(true_classes, predicted_classes)
 
     # Crear figura con dos columnas: matriz y texto
@@ -53,13 +63,11 @@ def show_confusion_matrix(true_classes, predicted_classes, class_labels):
     ax_matrix.set_ylabel('Valores Reales')
     ax_matrix.set_title('Matriz de Confusión')
 
-    # Calcular métricas
     acc = accuracy_score(true_classes, predicted_classes)
     f1 = f1_score(true_classes, predicted_classes, average='binary')
     prec = precision_score(true_classes, predicted_classes, average='binary')
     recall = recall_score(true_classes, predicted_classes, average='binary')
 
-    # Mostrar métricas
     metrics_text = (f"Accuracy: {acc:.2f}\n"
                     f"F1 Score: {f1:.2f}\n"
                     f"Precision: {prec:.2f}\n"
@@ -68,23 +76,27 @@ def show_confusion_matrix(true_classes, predicted_classes, class_labels):
     ax_text.axis('off')
     ax_text.text(0, 0.8, metrics_text, fontsize=12, va='top', ha='left',
                  bbox=dict(facecolor='white', edgecolor='black'))
-
+    
     plt.tight_layout()
     plt.show()
 
 if __name__ == "__main__":
+    results_file = "model_metrics.txt"
+    with open(results_file, "w") as f:  # Crear el archivo y escribir el encabezado
+        f.write("Modelo\tAccuracy\tPrecision\tRecall\tF1_Score\n")
+
     for MAGNIFICIENT_MODEL in [40, 100, 200, 400, None]:
         # Ruta al modelo entrenado
         if MAGNIFICIENT_MODEL is not None:
-            model_path = f"modelo_cnn_{MAGNIFICIENT_MODEL}x.h5"  # Asumimos que el modelo está guardado aquí
+            model_path = f"modelo_cnn_{MAGNIFICIENT_MODEL}x.h5"
+            model_name = f"modelo_cnn_{MAGNIFICIENT_MODEL}x"
         else:
             model_path = "modelo_cnn_all.h5"
-        
+            model_name = "modelo_cnn_all"
+
         MAGNIFICIENT_TEST = 40
-        # TODO: Para experimentar se puede: Modificar arquitectura, modificar hiperparametros,
-        #       otras imagenes, utilizar Data Augmentation. Otra opción es comparar con el KNN
         if MAGNIFICIENT_TEST is not None:
-            test_data_dir = f"./images/binary_scenario/test/{MAGNIFICIENT_TEST}X"  # Cambia esta ruta a tu directorio de prueba
+            test_data_dir = f"./images/binary_scenario/test/{MAGNIFICIENT_TEST}X"
         else:
             test_data_dir = "./images/binary_scenario_merged/test"
 
@@ -92,4 +104,4 @@ if __name__ == "__main__":
         model = load_trained_model(model_path)
         
         # Evaluar el modelo en el directorio de prueba
-        evaluate_model_on_directory(model, test_data_dir)
+        evaluate_model_on_directory(model, test_data_dir, model_name=model_name)
