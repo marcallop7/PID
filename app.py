@@ -296,7 +296,8 @@ class AnalizadorCancerDeMama:
             self.root.after(0, lambda idx=self.current_image_index: self.mostrar_imagen_seleccionada(idx))
             try:
                 modelo = self.modelo_actual.get()
-                if modelo == "KNN":
+                if modelo.startswith("KNN"):
+                    print(modelo)
                     if "(" in modelo and ")" in modelo:
                         ampliacion = modelo.split("(")[1].split(")")[0]
                     else:

@@ -57,7 +57,7 @@ def show_confusion_matrix_from_dicts(pred_benign_dict, pred_malign_dict, class_l
 
 
 if __name__ == "__main__":
-    for magnificient in [None]:
+    for magnificient in [40, 100, 200, 400, None]:
         if magnificient is not None:
             folder_path_benign = f"images\\binary_scenario\\test\\{magnificient}x\\benign"
             folder_path_malignant = f"images\\binary_scenario\\test\\{magnificient}x\\malignant"

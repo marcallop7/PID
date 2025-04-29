@@ -47,6 +47,9 @@ def predict_file_by_path(path, magnificient = None):
     else:    
         feature_path = f"models\\features\\binary\\training_1_{magnificient}_binary_feature.json"
 
+    print("-"*100)
+    print(feature_path)
+
     print("[INFO] load test image...")
     image = cv2.imread(path)
     image = cv2.resize(image, IMAGE_SIZE)
