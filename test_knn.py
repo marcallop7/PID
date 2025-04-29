@@ -4,7 +4,15 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, f1_score, precision_score, recall_score
 import numpy as np
 
-def show_confusion_matrix_from_dicts(pred_benign_dict, pred_malign_dict, class_labels):
+def save_metrics_to_file(file_path, model_name, accuracy, precision, recall, f1_score):
+    """
+    Guarda las métricas en un archivo de texto.
+    """
+    with open(file_path, "a") as f:  # Usa "a" para agregar contenido al archivo sin borrar lo anterior
+        f.write(f"{model_name}\t{accuracy:.2f}\t{precision:.2f}\t{recall:.2f}\t{f1_score:.2f}\n")
+
+
+def show_confusion_matrix_from_dicts(pred_benign_dict, pred_malign_dict, class_labels, model_name):
     """
     Muestra la matriz de confusión y las métricas de evaluación.
     """
@@ -53,7 +61,12 @@ def show_confusion_matrix_from_dicts(pred_benign_dict, pred_malign_dict, class_l
                  bbox=dict(facecolor='white', edgecolor='black'))
 
     plt.tight_layout()
-    plt.show()
+    plt.show(block=False)
+    plt.pause(2)
+    plt.close()
+
+    # Guardar métricas en el archivo
+    save_metrics_to_file("model_metrics.txt", model_name, acc, prec, recall, f1)
 
 
 if __name__ == "__main__":
@@ -64,12 +77,16 @@ if __name__ == "__main__":
 
             predict_folder_benign = predict_folder(folder_path_benign, f"{magnificient}x")
             predict_folder_malignant = predict_folder(folder_path_malignant, f"{magnificient}x")
+            model_name = f"knn_{magnificient}x"
         else: 
             folder_path_benign = f"images\\binary_scenario_merged\\test\\benign"
             folder_path_malignant = f"images\\binary_scenario_merged\\test\\malignant"
         
             predict_folder_benign = predict_folder(folder_path_benign)
             predict_folder_malignant = predict_folder(folder_path_malignant)
+            model_name = "knn_all"
+
         class_labels = {"benign": "Benigno", "malignant": "Maligno"}
 
-        show_confusion_matrix_from_dicts(predict_folder_benign, predict_folder_malignant, class_labels)
+        # Mostrar matriz de confusión y guardar métricas
+        show_confusion_matrix_from_dicts(predict_folder_benign, predict_folder_malignant, class_labels, model_name)

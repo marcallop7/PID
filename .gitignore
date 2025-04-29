@@ -10,3 +10,6 @@ __pycache__
 other
 
 outputs
+
+model_metrics.txt
+model_metrics_aug.txt
