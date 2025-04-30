@@ -10,7 +10,7 @@ rutas_modelos = [
     './modelo_cnn_all.h5'
 ]
 
-carpeta_salida = 'pesos_guardados'
+carpeta_salida = 'saved_weights'
 os.makedirs(carpeta_salida, exist_ok=True)
 
 for ruta in rutas_modelos:

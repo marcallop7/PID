@@ -5,7 +5,7 @@ from sklearn.metrics import confusion_matrix, accuracy_score, f1_score, precisio
 
 def save_metrics_to_file(file_path, model_name, accuracy, precision, recall, f1_score):
     with open(file_path, "a") as f:
-        f.write(f"{model_name}\t{accuracy:.2f}\t{precision:.2f}\t{recall:.2f}\t{f1_score:.2f}\n")
+        f.write(f"{model_name}\t{accuracy}\t{precision}\t{recall}\t{f1_score}\n")
 
 def show_confusion_matrix_from_dicts(pred_benign_dict, pred_malign_dict, class_labels, model_name):
     # Construir listas de clases verdaderas y predichas
@@ -43,10 +43,10 @@ def show_confusion_matrix_from_dicts(pred_benign_dict, pred_malign_dict, class_l
     recall = recall_score(y_true, y_pred, pos_label="malignant", average='binary')
 
     # Mostrar métricas en el segundo subplot
-    metrics_text = (f"Accuracy: {acc:.2f}\n"
-                    f"F1 Score: {f1:.2f}\n"
-                    f"Precision: {prec:.2f}\n"
-                    f"Recall: {recall:.2f}")
+    metrics_text = (f"Accuracy: {acc}\n"
+                    f"F1 Score: {f1}\n"
+                    f"Precision: {prec}\n"
+                    f"Recall: {recall}")
     
     ax_text.axis('off')
     ax_text.text(0, 0.8, metrics_text, fontsize=12, va='top', ha='left',

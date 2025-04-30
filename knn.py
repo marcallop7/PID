@@ -112,11 +112,11 @@ def matriz_dispersion(res_benign, res_malignant):
     specificity = TN / (TN + FP) if (TN + FP) else 0
     f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) else 0
 
-    print(f"{'Accuracy':20}: {accuracy:.2f}")
-    print(f"{'Precision (malignant)':20}: {precision:.2f}")
-    print(f"{'Recall (malignant)':20}: {recall:.2f}")
-    print(f"{'Specificity (benign)':20}: {specificity:.2f}")
-    print(f"{'F1 Score':20}: {f1_score:.2f}")
+    print(f"{'Accuracy':20}: {accuracy}")
+    print(f"{'Precision (malignant)':20}: {precision}")
+    print(f"{'Recall (malignant)':20}: {recall}")
+    print(f"{'Specificity (benign)':20}: {specificity}")
+    print(f"{'F1 Score':20}: {f1_score}")
 
 def visualize_features_from_json(json_path, save=False, output_folder="outputs"):
     if not os.path.exists(json_path):
