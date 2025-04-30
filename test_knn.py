@@ -2,12 +2,9 @@ from knn import predict_folder
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, accuracy_score, f1_score, precision_score, recall_score
+from save_metrics import save_metricas_csv, format_metrics
 
-def save_metrics_to_file(file_path, model_name, accuracy, precision, recall, f1_score):
-    with open(file_path, "a") as f:
-        f.write(f"{model_name}\t{accuracy:.2f}\t{precision:.2f}\t{recall:.2f}\t{f1_score:.2f}\n")
-
-def show_confusion_matrix_from_dicts(pred_benign_dict, pred_malign_dict, class_labels, model_name):
+def show_confusion_matrix_from_dicts(pred_benign_dict, pred_malign_dict, class_labels, model_name, show_metrics=True):
     # Construir listas de clases verdaderas y predichas
     y_true = []
     y_pred = []
@@ -42,24 +39,30 @@ def show_confusion_matrix_from_dicts(pred_benign_dict, pred_malign_dict, class_l
     prec = precision_score(y_true, y_pred, pos_label="malignant", average='binary')
     recall = recall_score(y_true, y_pred, pos_label="malignant", average='binary')
 
+    metrics = {
+        "Accuracy": acc,
+        "F1 Score": f1,
+        "Precision": prec,
+        "Recall": recall
+    }
+
     # Mostrar métricas en el segundo subplot
-    metrics_text = (f"Accuracy: {acc:.2f}\n"
-                    f"F1 Score: {f1:.2f}\n"
-                    f"Precision: {prec:.2f}\n"
-                    f"Recall: {recall:.2f}")
+    metrics_text = format_metrics(metrics)
     
     ax_text.axis('off')
     ax_text.text(0, 0.8, metrics_text, fontsize=12, va='top', ha='left',
                  bbox=dict(facecolor='white', edgecolor='black'))
-
-    plt.tight_layout()
-    plt.show()
+    
+    if(show_metrics):
+        plt.tight_layout()
+        plt.show()
 
     # Guardar métricas en el archivo
-    save_metrics_to_file("model_metrics.txt", model_name, acc, prec, recall, f1)
+    save_metricas_csv(model_name, metrics)
 
 
 if __name__ == "__main__":
+    show_metrics=False
     for magnificient in [40, 100, 200, 400, None]:
         if magnificient is not None:
             folder_path_benign = f"images\\binary_scenario\\test\\{magnificient}x\\benign"
@@ -67,16 +70,16 @@ if __name__ == "__main__":
 
             predict_folder_benign = predict_folder(folder_path_benign, f"{magnificient}x")
             predict_folder_malignant = predict_folder(folder_path_malignant, f"{magnificient}x")
-            model_name = f"knn_{magnificient}x"
+            model_name = f"modelo_knn_{magnificient}x"
         else: 
             folder_path_benign = f"images\\binary_scenario_merged\\test\\benign"
             folder_path_malignant = f"images\\binary_scenario_merged\\test\\malignant"
         
             predict_folder_benign = predict_folder(folder_path_benign)
             predict_folder_malignant = predict_folder(folder_path_malignant)
-            model_name = "knn_all"
+            model_name = "modelo_knn_all"
 
         class_labels = {"benign": "Benigno", "malignant": "Maligno"}
 
         # Mostrar matriz de confusión y guardar métricas
-        show_confusion_matrix_from_dicts(predict_folder_benign, predict_folder_malignant, class_labels, model_name)
+        show_confusion_matrix_from_dicts(predict_folder_benign, predict_folder_malignant, class_labels, model_name, show_metrics=show_metrics)

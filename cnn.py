@@ -2,6 +2,7 @@ import numpy as np
 from tensorflow.keras.preprocessing import image # type: ignore
 from tensorflow.keras.models import load_model # type: ignore
 import os
+from train_cnn import build_cnn_model
 
 # Diccionario para mapear clases a etiquetas y colores
 LABEL_MAP = {
@@ -25,6 +26,23 @@ def load_trained_model(magnificient, models_dir="./"):
 
     raise FileNotFoundError(f"No se encontró ningún modelo para: {base_name}")
 
+def load_trained_model_by_weights(magnificient, weights_dir="./saved_weights"):
+    if magnificient is None:
+        base_name = "modelo_cnn_all"
+    else:
+        base_name = f"modelo_cnn_{magnificient}"
+
+    # Buscar el primer archivo .h5 que coincida con el patrón
+    for fname in os.listdir(weights_dir):
+        if fname.startswith(base_name) and fname.endswith(".weights.h5"):
+            print(f"Cargando pesos del modelo: {fname}")
+            weight_path = os.path.join(weights_dir, fname)
+            model = build_cnn_model()
+            model.load_weights(weight_path)
+            return model
+
+    raise FileNotFoundError(f"No se encontró ningún modelo para: {base_name}")
+
 
 def preprocess_image(img_path, target_size=(128, 128)):
     img = image.load_img(img_path, target_size=target_size)
@@ -42,7 +60,7 @@ def predict_image_class(model, img_path):
 
 def predict_path_cnn(MAGNIFICIENT, image_path):
     try:
-        model = load_trained_model(MAGNIFICIENT)
+        model = load_trained_model_by_weights(MAGNIFICIENT)
         result = predict_image_class(model, image_path)
         return result
     except Exception as e:

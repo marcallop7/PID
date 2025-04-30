@@ -1,80 +1,81 @@
 import subprocess
 import matplotlib.pyplot as plt
 import sys
-import numpy as np
-    
-# Obtén la ruta del intérprete de Python del entorno virtual
-python_executable = sys.executable
+import pandas as pd
+import re
 
-scripts = ["test_cnn.py", "test_data_augmentation.py", "test_knn.py"]
+EXECUTE_SCRIPTS = False
 
-for script in scripts:
-    try:
-        subprocess.run([python_executable, script], check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Error al ejecutar {script}: {e}")
-        sys.exit(1)
+if(EXECUTE_SCRIPTS):
+    # Obtén la ruta del intérprete de Python del entorno virtual
+    python_executable = sys.executable
+
+    scripts = ["test_cnn.py", "test_data_augmentation.py", "test_knn.py"]
+
+    for script in scripts:
+        try:
+            subprocess.run([python_executable, script], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Error al ejecutar {script}: {e}")
+            sys.exit(1)
 
 # Continuar con el análisis si todos los scripts se ejecutan correctamente
 
-# Leer métricas desde el archivo model_metrics.txt
-metrics_file = 'model_metrics.txt'
-models = []
-precision = []
-recall = []
-accuracy = []
-f1_score = []
+# Leer métricas desde CSV
+df = pd.read_csv('metricas.csv')
 
-with open(metrics_file, 'r') as file:
-    for line in file:
-        # Suponiendo que el archivo tiene el formato: Modelo, Precision, Recall, Accuracy, F1-Score
-        parts = line.strip().split(',')
-        if len(parts) == 5:
-            models.append(parts[0].strip())
-            precision.append(float(parts[1].strip()))
-            recall.append(float(parts[2].strip()))
-            accuracy.append(float(parts[3].strip()))
-            f1_score.append(float(parts[4].strip()))
+# Extraer categoría (40x, 100x, etc.) desde el nombre del archivo
+def extraer_categoria(nombre):
+    match = re.search(r'(\d+x|all)', nombre)
+    return match.group(1) if match else "otro"
 
-# Crear gráficas comparativas
-# Gráfica de precisión
-plt.figure(figsize=(8, 6))
-plt.bar(models, precision, color=['blue', 'green', 'orange'])
-plt.title('Comparación de Precisión')
-plt.ylabel('Precisión')
-plt.ylim(0, 1)
-plt.savefig('precision_comparativa.png')
-plt.pause(2)
-plt.close()
+df["grupo"] = df["archivo"].apply(extraer_categoria)
 
-# Gráfica de recall
-plt.figure(figsize=(8, 6))
-plt.bar(models, recall, color=['blue', 'green', 'orange'])
-plt.title('Comparación de Recall')
-plt.ylabel('Recall')
-plt.ylim(0, 1)
-plt.savefig('recall_comparativa.png')
-plt.pause(2)
-plt.close()
+# Identificar tipo de modelo
+df["modelo"] = df["archivo"].apply(lambda x: "CNN" if "cnn" in x else "KNN")
 
-# Gráfica de accuracy
-plt.figure(figsize=(8, 6))
-plt.bar(models, accuracy, color=['blue', 'green', 'orange'])
-plt.title('Comparación de Accuracy')
-plt.ylabel('Accuracy')
-plt.ylim(0, 1)
-plt.savefig('accuracy_comparativa.png')
-plt.pause(2)
-plt.close()
+# Lista de grupos ordenados
+orden_grupos = ["40x", "100x", "200x", "400x", "all"]
 
-# Gráfica de F1-Score
-plt.figure(figsize=(8, 6))
-plt.bar(models, f1_score, color=['blue', 'green', 'orange'])
-plt.title('Comparación de F1-Score')
-plt.ylabel('F1-Score')
-plt.ylim(0, 1)
-plt.savefig('f1_score_comparativa.png')
-plt.pause(2)
-plt.close()
+# Asegurar orden lógico
+df["grupo"] = pd.Categorical(df["grupo"], categories=orden_grupos, ordered=True)
+df = df.sort_values("grupo")
 
-print("Gráficas generadas y guardadas como 'precision_comparativa.png', 'recall_comparativa.png', 'accuracy_comparativa.png' y 'f1_score_comparativa.png'.")
+# Métricas a graficar
+metricas = {
+    "Accuracy": "Accuracy",
+    "F1 Score": "F1 Score",
+    "Precision": "Precision",
+    "Recall": "Recall"
+}
+
+# Colores por modelo
+colores = {"CNN": "blue", "KNN": "green"}
+marcadores = {"CNN": "o", "KNN": "s"}
+
+# Crear una gráfica para cada métrica
+for clave, titulo in metricas.items():
+    plt.figure(figsize=(10, 6))
+
+    for modelo in df["modelo"].unique():
+        subset = df[df["modelo"] == modelo]
+        plt.scatter(
+            subset["grupo"], 
+            subset[clave], 
+            label=modelo, 
+            color=colores[modelo], 
+            marker=marcadores[modelo], 
+            s=100  # tamaño de los puntos
+        )
+
+    plt.title(f'Comparación de {titulo} por tamaño de conjunto')
+    plt.ylabel(titulo)
+    plt.xlabel('Grupo (Tamaño de dataset)')
+    plt.ylim(0, 1)
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f'{clave.lower().replace(" ", "_")}_comparativa_puntos.png')
+    plt.close()
+
+print("Gráficas de puntos generadas por grupo.")
