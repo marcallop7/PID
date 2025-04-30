@@ -13,3 +13,8 @@ outputs
 
 model_metrics.txt
 model_metrics_aug.txt
+
+docs/**
+!docs/documento.tex
+!docs/**/*.png
+!docs/bibliografia.bib
