@@ -1,0 +1,12 @@
+h5py
+matplotlib
+numpy
+opencv_python
+pandas
+Pillow
+scikit_learn
+seaborn
+tensorflow
+tensorflow_intel
+tkinterdnd2
+tqdm
