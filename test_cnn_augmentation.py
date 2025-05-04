@@ -95,9 +95,9 @@ if __name__ == "__main__":
     show_metrics=False
     for MAGNIFICIENT in [40, 100, 200, 400, None]:
         if MAGNIFICIENT is not None:
-            model_name = f"modelo_cnn_{MAGNIFICIENT}x_aug"
+            model_name = f"modelo_cnn_aug_{MAGNIFICIENT}x"
         else:
-            model_name = "modelo_cnn_all_aug"
+            model_name = "modelo_cnn_aug_all"
 
         if MAGNIFICIENT is not None:
             test_data_dir = f"./images/binary_scenario/test/{MAGNIFICIENT}X"

@@ -31,8 +31,21 @@ def extraer_categoria(nombre):
 
 df["grupo"] = df["archivo"].apply(extraer_categoria)
 
+# Clasificar modelo más detalladamente
+def identificar_modelo(nombre):
+    if "cnn_aug" in nombre:
+        return "CNN_AUG"
+    elif "cnn" in nombre:
+        return "CNN"
+    elif "knn_aug" in nombre:
+        return "KNN_AUG"
+    elif "knn" in nombre:
+        return "KNN"
+    else:
+        return "Otro"
+    
 # Identificar tipo de modelo
-df["modelo"] = df["archivo"].apply(lambda x: "CNN" if "cnn" in x else "KNN")
+df["modelo"] = df["archivo"].apply(identificar_modelo)
 
 # Lista de grupos ordenados
 orden_grupos = ["40x", "100x", "200x", "400x", "all"]
@@ -49,9 +62,19 @@ metricas = {
     "Recall": "Recall"
 }
 
-# Colores por modelo
-colores = {"CNN": "blue", "KNN": "green"}
-marcadores = {"CNN": "o", "KNN": "s"}
+# Colores y marcadores por modelo
+colores = {
+    "CNN": "#1f77b4",        # Azul intenso
+    "CNN_AUG": "#ff7f0e",    # Naranja
+    "KNN": "#2ca02c",        # Verde
+    "KNN_AUG": "#d62728"     # Rojo
+}
+marcadores = {
+    "CNN": "o",       # Círculo
+    "CNN_AUG": "^",   # Triángulo hacia arriba
+    "KNN": "s",       # Cuadrado
+    "KNN_AUG": "D"    # Diamante
+}
 
 # Crear una gráfica para cada métrica
 for clave, titulo in metricas.items():
@@ -75,7 +98,7 @@ for clave, titulo in metricas.items():
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
-    plt.savefig(f'{clave.lower().replace(" ", "_")}_comparativa_puntos.png')
+    plt.savefig(f'./outputs/metrics/comparation_metrics/{clave.lower().replace(" ", "_")}_comparativa_puntos.png')
     plt.close()
 
 print("Gráficas de puntos generadas por grupo.")
