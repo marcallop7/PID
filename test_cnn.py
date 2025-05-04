@@ -1,5 +1,4 @@
 import numpy as np
-from tensorflow.keras.models import load_model # type: ignore
 from tensorflow.keras.preprocessing.image import ImageDataGenerator # type: ignore
 import matplotlib.pyplot as plt
 import seaborn as sns

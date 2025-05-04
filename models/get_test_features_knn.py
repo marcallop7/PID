@@ -1,6 +1,5 @@
 import os
 import json
-from PIL import Image
 import numpy as np
 import cv2
 from tqdm import tqdm
@@ -86,6 +85,8 @@ def get_features_knn(encoder, base_path, magnification=None):
 
 
 if __name__ == "__main__":
+    get_all_features_knn(40)
+    get_all_features_knn(100)
     get_all_features_knn(200)
     get_all_features_knn(400)
     get_all_features_knn()

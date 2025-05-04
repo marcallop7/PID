@@ -2,7 +2,6 @@ import os
 import cv2
 import numpy as np
 import random
-from tensorflow.keras.models import load_model  # type: ignore
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, accuracy_score, f1_score, precision_score, recall_score
 import seaborn as sns
