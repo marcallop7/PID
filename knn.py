@@ -106,7 +106,7 @@ def predict_folder(folder_path, magnificient = None, augmentation_function = Non
         res[label] += 1
     return res
 
-def visualize_features_from_json(json_path, save=False, output_folder="outputs"):
+def visualize_features_pca(json_path, save=False, output_folder="outputs\\features\\pca"):
     if not os.path.exists(json_path):
         print("El archivo no existe.")
         return
@@ -136,7 +136,7 @@ def visualize_features_from_json(json_path, save=False, output_folder="outputs")
     else:
         plt.show()
 
-def visualize_features_tsne(json_path, save=False, output_folder="outputs"):
+def visualize_features_tsne(json_path, save=False, output_folder="outputs\\features\\tsne"):
     if not os.path.exists(json_path):
         print("El archivo no existe.")
         return
