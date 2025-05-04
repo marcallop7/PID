@@ -19,4 +19,3 @@ def merge_subfolders(source_root, target_root):
 # Ejemplo de uso:
 merge_subfolders("./images/binary_scenario/train", "./images/binary_scenario_merged/train")
 merge_subfolders("./images/binary_scenario/test", "./images/binary_scenario_merged/test")
-merge_subfolders("./images/binary_scenario/val", "./images/binary_scenario_merged/val")

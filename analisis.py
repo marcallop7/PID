@@ -10,7 +10,7 @@ if(EXECUTE_SCRIPTS):
     # Obtén la ruta del intérprete de Python del entorno virtual
     python_executable = sys.executable
 
-    scripts = ["test_cnn.py", "test_data_augmentation.py", "test_knn.py"]
+    scripts = ["test_cnn.py", "test_cnn_augmentation.py", "test_knn.py", "test_knn_augmentation.py"]
 
     for script in scripts:
         try:

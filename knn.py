@@ -41,7 +41,7 @@ def perform_search(query_features, indexed_train, max_results=5):
 def most_common(arr):
     return Counter(arr).most_common(1)[0][0]
 
-def predict_file_by_path(path, magnificient = None):
+def predict_file_by_path(path, magnificient = None, augmentation_function = None):
     if magnificient is None:
         feature_path = "models\\features\\binary\\training_1_all_binary_feature.json"
     else:    
@@ -53,6 +53,8 @@ def predict_file_by_path(path, magnificient = None):
     print("[INFO] load test image...")
     image = cv2.imread(path)
     image = cv2.resize(image, IMAGE_SIZE)
+    if augmentation_function is not None:
+        image = augmentation_function(image)
     test_x = np.array([image]).astype("float32") / 255.0
 
     print("[INFO] encoding image...")
@@ -68,17 +70,28 @@ def predict_file_by_path(path, magnificient = None):
     color = "green" if label in classifications["benign"] or label == "benign" else "red"
     return label, color
 
-def predict_folder(folder_path, magnificient = None):
+def predict_folder(folder_path, magnificient = None, augmentation_function = None):
     if magnificient is None:
         feature_path = "models\\features\\binary\\training_1_all_binary_feature.json"
     else:    
         feature_path = f"models\\features\\binary\\training_1_{magnificient}_binary_feature.json"
 
-    dataset = [os.path.join(folder_path, f) for f in os.listdir(folder_path)]
+    dataset = []
+    for root, dirs, files in os.walk(folder_path):
+        for f in files:
+            dataset.append(os.path.join(root, f))
+    
     if LIMIT_IMAGES is not None:
         dataset = dataset[:LIMIT_IMAGES]
     images = [cv2.resize(cv2.imread(img), IMAGE_SIZE) for img in dataset]
     test_x = np.array(images).astype("float32") / 255.0
+
+    if augmentation_function is not None:
+        augmented = []
+        for image in test_x:
+            augmented += augmentation_function(image)
+        test_x = np.stack(augmented, axis=0)
+
     features_retrieved = encoder.predict(test_x)
 
     with open(feature_path) as f:
@@ -92,31 +105,6 @@ def predict_folder(folder_path, magnificient = None):
         label = most_common(labels_ret)
         res[label] += 1
     return res
-
-def matriz_dispersion(res_benign, res_malignant):
-    TP = res_malignant.get('malignant', 0)
-    TN = res_benign.get('benign', 0)
-    FP = res_benign.get('malignant', 0)
-    FN = res_malignant.get('benign', 0)
-
-    print(f"\n{'':12}|{'benign':>10}   {'malignant':>10}")
-    print("-" * 34)
-    print(f"{'benign':12}|{TN:>10}   {FP:>10}")
-    print(f"{'malignant':12}|{FN:>10}   {TP:>10}")
-    print("\nMedidas de evaluación:")
-
-    total = TP + TN + FP + FN
-    accuracy = (TP + TN) / total if total else 0
-    precision = TP / (TP + FP) if (TP + FP) else 0
-    recall = TP / (TP + FN) if (TP + FN) else 0
-    specificity = TN / (TN + FP) if (TN + FP) else 0
-    f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) else 0
-
-    print(f"{'Accuracy':20}: {accuracy}")
-    print(f"{'Precision (malignant)':20}: {precision}")
-    print(f"{'Recall (malignant)':20}: {recall}")
-    print(f"{'Specificity (benign)':20}: {specificity}")
-    print(f"{'F1 Score':20}: {f1_score}")
 
 def visualize_features_from_json(json_path, save=False, output_folder="outputs"):
     if not os.path.exists(json_path):
