@@ -2,7 +2,7 @@ from knn import predict_folder
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, accuracy_score, f1_score, precision_score, recall_score
-from save_metrics import save_metricas_csv, format_metrics
+from save_metrics import save_metrics_csv, format_metrics
 
 def show_confusion_matrix_from_dicts(pred_benign_dict, pred_malign_dict, class_labels, model_name, show_metrics=True):
     # Construir listas de clases verdaderas y predichas
@@ -58,7 +58,7 @@ def show_confusion_matrix_from_dicts(pred_benign_dict, pred_malign_dict, class_l
         plt.show()
 
     # Guardar métricas en el archivo
-    save_metricas_csv(model_name, metrics)
+    save_metrics_csv(model_name, metrics)
 
 
 if __name__ == "__main__":

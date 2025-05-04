@@ -4,7 +4,7 @@ import os
 def format_metrics(metrics: dict):
     return "\n".join(f"{key}: {value}" for key, value in metrics.items())
 
-def save_metricas_csv(model_name: str, metrics: dict, output_paht="metricas.csv"):
+def save_metrics_csv(model_name: str, metrics: dict, output_paht="metrics.csv"):
     if os.path.exists(output_paht):
         df = pd.read_csv(output_paht)
     else:

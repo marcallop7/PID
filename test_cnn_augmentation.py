@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, accuracy_score, f1_score, precision_score, recall_score
 import seaborn as sns
 from cnn import load_trained_model_by_weights
-from save_metrics import save_metricas_csv, format_metrics
+from save_metrics import save_metrics_csv, format_metrics
 
 def augment_image(image, num_variations=5):
     augmented_images = []
@@ -65,7 +65,7 @@ def evaluate_model_on_augmented_data(model, data_dir, target_size=(128, 128), nu
     show_confusion_matrix(labels, predicted_classes, class_to_idx, metrics, show_metrics)
 
     # Guardar métricas en el archivo
-    save_metricas_csv(model_name, metrics)
+    save_metrics_csv(model_name, metrics)
 
 def show_confusion_matrix(true_classes, predicted_classes, class_labels, metrics, show_metrics=True):
     cm = confusion_matrix(true_classes, predicted_classes)

@@ -1,10 +1,14 @@
 import pandas as pd
 import re
-
 import matplotlib.pyplot as plt
+import os
+
+# Crear carpetas si no existen
+os.makedirs('./outputs/metrics/comparation_metrics', exist_ok=True)
+os.makedirs('./outputs/metrics/comparation_magnification', exist_ok=True)
 
 # Cargar el archivo CSV
-file_path = 'metricas.csv'  # Cambia el nombre si es necesario
+file_path = 'metrics.csv'  # Cambia el nombre si es necesario
 
 # Crear gráficas comparativas
 metrics = ['Accuracy', 'F1 Score', 'Precision', 'Recall']
