@@ -86,26 +86,30 @@ def train_model(data_dir, num_classes=2, input_shape=(128, 128, 3), batch_size=3
 
 def get_available_filename(base_name, extension=".h5", directory="."):
     filename = f"{base_name}{extension}"
-    i = 1
-    while os.path.exists(os.path.join(directory, filename)):
-        filename = f"{base_name}_{i}{extension}"
-        i += 1
     return os.path.join(directory, filename)
 
 
 
 if __name__ == "__main__":
     MAGNIFICIENT = None
+    SAVE_MODEL = False
+    SAVE_WEIGHTS = True
     if MAGNIFICIENT is not None:
         DATASET_DIR = f"./images/binary_scenario/train/{MAGNIFICIENT}X"
         NUM_CLASSES = 2
         model = train_model(DATASET_DIR, num_classes=NUM_CLASSES)
         model_name = get_available_filename(f"modelo_cnn_{MAGNIFICIENT}x")
-        model.save(model_name)
+        if SAVE_MODEL:
+            model.save(model_name)
+        if SAVE_WEIGHTS:
+            model.save_weights(f"./saved_weights/modelo_cnn_{MAGNIFICIENT}x.weights.h5")
     else:
         print("IN PROCESS")
         DATASET_DIR = f"./images/binary_scenario_merged/train"
         NUM_CLASSES = 2
         model = train_model(DATASET_DIR, num_classes=NUM_CLASSES)
         model_name = get_available_filename(f"modelo_cnn_all")
-        model.save(model_name)
+        if SAVE_MODEL:
+            model.save(model_name)
+        if SAVE_WEIGHTS:
+            model.save_weights("./saved_weights/modelo_cnn_all.weights.h5")
