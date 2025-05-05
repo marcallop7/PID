@@ -117,7 +117,7 @@ def visualize_features_pca(json_path, save=False, output_folder="outputs\\featur
         name_without_ext = os.path.splitext(filename)[0]
 
     features = np.array(data["features"])
-    labels = np.array(data["labels"])
+    labels = np.array([str(lbl).strip() for lbl in data["labels"]])
 
     # Si hay muchas, hacer PCA
     if len(features) > 2:
@@ -131,10 +131,12 @@ def visualize_features_pca(json_path, save=False, output_folder="outputs\\featur
 
     if save:
         path_img = os.path.join(output_folder, name_without_ext + "_visualization.png")
+        plt.legend(title="Etiquetas")
         plt.savefig(path_img)
         print(f"[INFO] Imagen guardada en: {path_img}")
     else:
         plt.show()
+    plt.close()
 
 def visualize_features_tsne(json_path, save=False, output_folder="outputs\\features\\tsne"):
     if not os.path.exists(json_path):
@@ -147,10 +149,10 @@ def visualize_features_tsne(json_path, save=False, output_folder="outputs\\featu
         name_without_ext = os.path.splitext(filename)[0]
 
     features = np.array(data["features"])
-    labels = np.array(data["labels"])
+    labels = np.array([str(lbl).strip() for lbl in data["labels"]])
 
     print("[INFO] Reducción de dimensionalidad con t-SNE...")
-    tsne = TSNE(n_components=2, perplexity=30, n_iter=1000, random_state=42)
+    tsne = TSNE(n_components=2, perplexity=30, max_iter=1000, random_state=42)
     reduced = tsne.fit_transform(features)
 
     # Crear la carpeta si no existe
@@ -164,7 +166,9 @@ def visualize_features_tsne(json_path, save=False, output_folder="outputs\\featu
 
     if save:
         path_img = os.path.join(output_folder, name_without_ext + "_tsne_visualization.png")
+        plt.legend(title="Etiquetas")
         plt.savefig(path_img)
         print(f"[INFO] Imagen guardada en: {path_img}")
     else:
         plt.show()
+    plt.close()
