@@ -10,6 +10,7 @@
 \usepackage{titling}  % Para personalizar la portada
 \usepackage{geometry} % Márgenes
 \usepackage{titlesec} % Para personalizar títulos
+\usepackage{xcolor}
 \usepackage[backend=bibtex,style=ieee]{biblatex}
 \addbibresource{bibliografia.bib} % Archivo de bibliografía
 \usepackage{amsmath} % Para ecuaciones matemáticas
@@ -255,13 +256,69 @@ En esta etapa, se llevará a cabo una comparación de rendimiento entre dos enfo
 
 
 \section{Manual de usuario}
-Aquí van las conclusiones.
+
+Esta herramienta permite cargar una imagen desde el dispositivo y realizar un análisis para determinar si corresponde a un caso \textbf{benigno} o \textbf{maligno}. Los pasos a seguir son los siguientes:
+
+\subsection*{Paso 1: Seleccionar una Imagen}
+
+\textbf{Opción 1: Cargar por Ruta}
+\begin{itemize}
+    \item Haz clic en el botón \textbf{Seleccionar Imágenes}.
+    \item Navega por tus carpetas y selecciona las imágenes que deseas analizar.
+    \item Las imágenes seleccionadas aparecerán en el panel de previsualización.
+\end{itemize}
+
+\textbf{Opción 2: Arrastrar y Soltar}
+\begin{itemize}
+    \item Puedes arrastrar la imagen directamente desde tu explorador de archivos y soltarla en el área indicada de la aplicación.
+    \item Las imágenes se cargarán automáticamente en la aplicación.
+\end{itemize}
+
+\subsection*{Paso 2: Iniciar el Análisis}
+
+\begin{itemize}
+    \item Una vez que hayas cargado la imagen correctamente, haz clic en el botón \textbf{Analizar}.
+    \item La aplicación procesará la imagen y mostrará si corresponde a un caso maligno o benigno.
+\end{itemize}
+
+\subsection*{Paso 3: Ver el Resultado}
+
+\begin{itemize}
+    \item Después de un breve momento, se mostrará el resultado en pantalla.
+    \item Si la imagen es \textbf{benigna}, se mostrará un mensaje y un círculo indicador en color \textcolor{green}{verde}.
+    \item Si la imagen es \textbf{maligna}, se mostrará un mensaje y un círculo indicador en color \textcolor{red}{rojo}.
+\end{itemize}
+
+\subsection*{Paso 4: Realizar Nuevos Análisis}
+
+\begin{itemize}
+    \item Puedes cargar otras imágenes haciendo clic nuevamente en el botón \textbf{Seleccionar} o arrastrándolas directamente.
+    \item El proceso de análisis es el mismo para cada imagen que cargues.
+\end{itemize}
+
 
 \section{Conclusiones}
 Aquí van las conclusiones.
 
 \section{Autoevaluación de cada miembro del equipo}
-Aquí van las conclusiones.
+
+
+\begin{table}
+    \centering
+    \begin{tabular}{cccc}
+         &  Lucas&  Marina& Juan Antonio\\
+         Desarrollo&  10&  & 9\\
+         Documentación&  9&  & 8\\
+         Investigación&  10&  & 10\\
+         Presentación&  &  & 10\\
+         Reunión&  10&  & 10\\
+         Seguimiento&  10&  & 6\\
+         Test&  10&  & 10\\
+    \end{tabular}
+    \caption{Caption}
+    \label{tab:my_label}
+\end{table}
+
 
 \section{Tabla de tiempos}
 Aquí van las conclusiones.
