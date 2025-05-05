@@ -85,8 +85,6 @@ def get_features_knn(encoder, base_path, magnification=None):
 
 
 if __name__ == "__main__":
-    get_all_features_knn(40)
-    get_all_features_knn(100)
-    get_all_features_knn(200)
-    get_all_features_knn(400)
-    get_all_features_knn()
+
+    for magnification in [40, 100, 200, 400, None]:
+        get_all_features_knn(magnification)

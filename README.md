@@ -46,8 +46,18 @@ models/
 └── training_1.h5
 ```
 
+Las características de las imágenes existentes pueden encontrar aquí:
+
+🔗 [Características para KNN](https://drive.google.com/drive/folders/16bp6vsNZt_4Db3iaqz9Adn1j0Fxet9n7)
+
 Este modelo fue tomado del repositorio original:  
 📦 https://github.com/forderation/breast-cancer-retrieval
+
+### 3. Descarga de diferentes pesos de la CNN
+
+Los diferentes pesos según la amplitud de la imagen para el modelo CNN:
+
+🔗 [Pesos entranimento CNN](https://drive.google.com/drive/folders/1jemlQFu66oN8CJAz7ka0WGnAwgU-GPaq)
 
 ---
 
