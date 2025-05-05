@@ -14,6 +14,11 @@
 \usepackage[backend=bibtex,style=ieee]{biblatex}
 \addbibresource{bibliografia.bib} % Archivo de bibliografía
 \usepackage{amsmath} % Para ecuaciones matemáticas
+\usepackage[T1]{fontenc}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+
 % Personalización del título en la portada
 \newcommand{\customtitlefont}{\fontsize{40pt}{42pt}\selectfont\bfseries} % Cambia el tamaño y estilo
 
@@ -27,7 +32,6 @@ Juan Antonio Moreno Moguel \\
 \date{\today}
 
 \begin{document}
-
 % PORTADA
 \begin{titlepage}
     \centering
@@ -59,13 +63,13 @@ Este proyecto se enmarca en la asignatura de Procesamiento de Imágenes Digitale
 \section{Introducción}
 El cáncer de mama es una de las principales causas de mortalidad en el mundo, habiendo sido la responsable de 670.000 muertes en 2022 siendo a su vez el tipo de cáncer más común en las mujeres según \cite{who_breast_cancer}. Esto provoca que durante los últimos años se haya estado realizando una labor social enorme referente a la concienciación sobre el cáncer de mama dando gran importancia a su pronta detección.\\
 
-Gracias a los avances en Deep Learning \cite{shinde2018review}, se han desarrollado métodos innovadores para analizar imágenes histológicas y detectar el cáncer de mama. En este contexto, existen dos aproximaciones que se han estudiado en la literatura, como en el artículo textbf{“Classification of breast cancer based on histology images using convolutional neural networks}” \cite{bardou2018classification}, soportada por los 445 artículos en los que se realiza un estudio entre dos enfoques.\\
+Gracias a los avances en Deep Learning \cite{shinde2018review}, se han desarrollado métodos innovadores para analizar imágenes histológicas y detectar el cáncer de mama. En este contexto, existen dos aproximaciones que se han estudiado en la literatura, como en el artículo \textit{\textbf{“Classification of breast cancer based on histology images using convolutional neural networks”}} \cite{bardou2018classification}, soportada por los 445 artículos en los que se realiza un estudio entre dos enfoques.\\
 
-Este proyecto tiene como objetivo el desarrollo de una aplicación capaz de detectar cáncer de mama a partir de imágenes histológicas, utilizando dos enfoques complementarios. El primero se basa en una red neuronal convolucional (CNN) que realiza clasificación directamente a la imagen, y un segundo enfoque, basado en extracción de características seguida de la clasificación mediante el algoritmo K-Nearest Neighbors (KNN).\\
+Este proyecto tiene como objetivo el desarrollo de una aplicación capaz de detectar cáncer de mama a partir de imágenes histológicas, utilizando dos enfoques complementarios. El \textit{primero} se basa en una red neuronal convolucional (\textbf{CNN}) que realiza clasificación directamente a la imagen, y un \textit{segundo enfoque}, basado en extracción de características seguida de la clasificación mediante el algoritmo K-Nearest Neighbors (\textbf{KNN}).\\
 
-El primer enfoque se fundamenta en redes neuronales convolucionales, que han demostrado gran efectividad en la clasificación automática de imágenes biomédicas. Específicamente, el trabajo de \cite{minarno2021cnn} implementa un autoencoder basado en CNN para la recuperación de imágenes de cáncer de mama, permitiendo identificar imágenes similares dentro de grandes bases de datos. Esta capacidad de aprendizaje profundo permite al modelo extraer representaciones jerárquicas y semánticas directamente desde los datos crudos, sin necesidad de ingeniería manual de características.\textbackslash{}
+El \textit{primer enfoque} se fundamenta en redes neuronales convolucionales, que han demostrado gran efectividad en la clasificación automática de imágenes biomédicas. Específicamente, el trabajo de \cite{minarno2021cnn} implementa un autoencoder basado en CNN para la recuperación de imágenes de cáncer de mama, permitiendo identificar imágenes similares dentro de grandes bases de datos. Esta capacidad de aprendizaje profundo permite al modelo extraer representaciones jerárquicas y semánticas directamente desde los datos crudos, sin necesidad de ingeniería manual de características.
 
-Este enfoque aprovecha la potencia de las Redes Neuronales Convolucionales (CNN), un tipo de red neuronal feedforward inspirada en la percepción visual \textbackslash{}cite\{hubel1962receptive\}. Las CNN aplican filtros o “kernels” a lo largo de las imágenes para extraer automáticamente patrones y características como bordes, texturas y formas. Esta capacidad de aprender de forma automática elimina la necesidad de una extracción manual de atributos y, al reducir significativamente el número de conexiones en comparación con una red completamente conectada (FC), permite una convergencia más rápida y una actualización de pesos más eficiente durante el entrenamiento.
+Este enfoque aprovecha la potencia de las Redes Neuronales Convolucionales (CNN), un tipo de red neuronal feedforward inspirada en la percepción visual \cite{hubel1962receptive}. Las CNN aplican filtros o “kernels” a lo largo de las imágenes para extraer automáticamente patrones y características como bordes, texturas y formas. Esta capacidad de aprender de forma automática elimina la necesidad de una extracción manual de atributos y, al reducir significativamente el número de conexiones en comparación con una red completamente conectada (FC), permite una convergencia más rápida y una actualización de pesos más eficiente durante el entrenamiento.\\
 
 \begin{figure}[!ht]
     \centering
@@ -74,7 +78,7 @@ Este enfoque aprovecha la potencia de las Redes Neuronales Convolucionales (CNN)
     \label{fig:capas_convolucionales}
 \end{figure}
 
-Por otro lado, el segundo enfoque está inspirado en el trabajo de \cite{bardou2018classification}, del cuál se ha utilizado parte de su propuesta dedicada a la recuperación de imágenes de células histográficas de cáncer de mama. En concreto, se ha extraído la parte del encoder para poder realizar una adecuada extracción de características de las imágenes, con las cuáles se lleva a cabo posteriormente un análisis mediante KNN utilizando dichas características extraídas.
+Por otro lado, el \textit{segundo enfoque} está inspirado en el trabajo de \cite{bardou2018classification}, del cuál se ha utilizado parte de su propuesta dedicada a la recuperación de imágenes de células histográficas de cáncer de mama. En concreto, se ha extraído la parte del encoder para poder realizar una adecuada extracción de características de las imágenes, con las cuáles se lleva a cabo posteriormente un análisis mediante KNN utilizando dichas características extraídas.
 
 \newpage
 Ambos enfoques son implementados y evaluados en este proyecto, comparando su rendimiento y su viabilidad para una futura aplicación en el diagnóstico asistido por computadora.\\
@@ -114,7 +118,7 @@ Una \textbf{Red Neuronal Convolucional} (CNN, por sus siglas en inglés) es un t
 
 \textbf{Estructura típica de una CNN:}
 \begin{enumerate}
-    \item \textbf{Capa Convolucional (Convolutional Layer):} Esta capa aplica filtros (o kernels) sobre la imagen de entrada para extraer características locales, como bordes, texturas o patrones específicos. El proceso de convolución genera mapas de activación que representan la presencia de ciertas características.
+    \item \textbf{Capa Convolucional (Convolutional Layer):} Esta capa aplica filtros (o \textit{kernels}) sobre la imagen de entrada para extraer características locales, como bordes, texturas o patrones específicos. El proceso de convolución genera mapas de activación que representan la presencia de ciertas características.
     \item \textbf{Función de Activación (ReLU):} Tras cada convolución, se aplica normalmente una función de activación como ReLU (Rectified Linear Unit) para introducir no linealidades, lo que permite a la red aprender funciones más complejas.
     \item \textbf{Capa de Agrupamiento (Pooling Layer):} Reduce la dimensionalidad de los mapas de activación, conservando las características más relevantes. El tipo más común es \textit{max pooling}, que selecciona el valor máximo en regiones locales.
     \item \textbf{Capas Completamente Conectadas (Fully Connected Layers):} Al final de la red, estas capas interpretan las características extraídas para realizar la predicción final, como clasificar si una imagen muestra tejido sano o indicios de cáncer.
@@ -140,7 +144,7 @@ En concreto, en este proyecto, el modelo CNN ya se encontraba predefinido en el 
 
 \newpage
 \section{Implementación}
-El desarrollo de este proyecto se fundamenta en el uso de técnicas de aprendizaje automático y profundo para la clasificación de imágenes histológicas de cáncer de mama. Con el objetivo de comparar el rendimiento entre distintos enfoques, se han implementado y entrenado dos tipos de modelos: uno basado en un clasificador K-Nearest Neighbors (KNN) acompañado de un proceso de extracción de características, y otro basado en una red neuronal convolucional (CNN). Ambos modelos han sido entrenados utilizando un conjunto de imágenes histológicas públicamente disponible, asociado al trabajo de Bardou et al. [1]. Este dataset incluye imágenes con diferentes niveles de magnificación (40x, 100x, 200x y 400x), aunque el artículo original no proporciona demasiados detalles sobre la obtención de las imágenes ni sobre las características clínicas asociadas.\\
+El desarrollo de este proyecto se fundamenta en el uso de técnicas de aprendizaje automático y profundo para la clasificación de imágenes histológicas de cáncer de mama. Con el objetivo de comparar el rendimiento entre distintos enfoques, se han implementado y entrenado dos tipos de modelos: uno basado en un clasificador K-Nearest Neighbors (KNN) acompañado de un proceso de extracción de características, y otro basado en una red neuronal convolucional (CNN). Ambos modelos han sido entrenados utilizando un conjunto de imágenes histológicas públicamente disponible, asociado al trabajo [1]. Este dataset incluye imágenes con diferentes niveles de magnificación (40x, 100x, 200x y 400x), aunque el artículo original no proporciona demasiados detalles sobre la obtención de las imágenes ni sobre las características clínicas asociadas.\\
 
 \subsection{Descripción del dataset}
 Para el desarrollo de este proyecto se utilizó el \textbf{dataset de imágenes histológicas de cáncer de mama BreaKHis} \cite{google_drive_folder}, asociado al trabajo de \cite{bardou2018classification}. Este conjunto de datos es ampliamente utilizado en la literatura científica para la investigación en diagnóstico asistido por computadora en cáncer de mama. BreaKHis contiene \textbf{7909 imágenes histológicas} de biopsias mamarias, distribuidas en dos clases principales: \textbf{benignas} y \textbf{malignas}, en concreto, \textbf{2480 imágenes benignas}, subdivididas en cuatro subtipos: adenosis, fibroadenoma, tumor filoides y tejido conectivo y  \textbf{5429 imágenes malignas}, subdivididas en carcinoma ductal, carcinoma lobulillar, carcinoma mucinoso y carcinoma papilar. Las imágenes fueron adquiridas a partir de muestras teñidas con hematoxilina y eosina \texttt{(H\&E)} y capturadas con un microscopio óptico en diferentes niveles de aumento: \textbf{40x, 100x, 200x y 400x}.\\
@@ -157,9 +161,9 @@ Una vez seleccionados la imagen y el modelo, el usuario puede iniciar el anális
 La aplicación también gestiona de forma inteligente el estado de la interfaz: desactiva el botón de análisis si no se han cumplido los requisitos previos (imagen y modelo seleccionados), y limpia automáticamente los resultados anteriores cuando se cargan nuevos datos. Gracias a su diseño estructurado y al uso de componentes \textit{ttk}, la experiencia del usuario es fluida y profesional, facilitando la interpretación del diagnóstico por parte de usuarios tanto técnicos como clínicos.\\
 
 \subsubsection{Arquitectura CNN}
-En el ámbito del aprendizaje automático, las redes neuronales convolucionales \texttt{(CNN)} se han convertido en una tendencia dominante, alcanzando un notable éxito en diversas áreas como la visión por computador y el reconocimiento de voz. En este contexto, Bardou, Zhang y Ahmad en \cite{bardou2018classification} proponen una arquitectura CNN específicamente diseñada para la clasificación de imágenes histológicas de cáncer de mama teñidas con hematoxilina y eosina \texttt{(H\&E)}, diferenciando entre tejidos benignos y malignos. La arquitectura fue implementada utilizando el popular framework BVLC Caffe \cite{jia2014caffe}, desarrollado por la Universidad de California, Berkeley. Este entorno permite diseñar e implementar redes CNN de forma sencilla, con interfaces disponibles tanto para \textit{MATLAB} como para Python, y soporte para entrenamiento en CPU y GPU. El modelo CNN propuesto se especifica mediante archivos de configuración que definen la estructura de la red y los parámetros de optimización.\\
+En el ámbito del aprendizaje automático, las redes neuronales convolucionales \texttt{(CNN)} se han convertido en una tendencia dominante, alcanzando un notable éxito en diversas áreas como la visión por computador y el reconocimiento de voz. En este contexto, el atrículo \cite{bardou2018classification} propone una arquitectura CNN específicamente diseñada para la clasificación de imágenes histológicas de cáncer de mama teñidas con hematoxilina y eosina \texttt{(H\&E)}, diferenciando entre tejidos benignos y malignos. La arquitectura fue implementada utilizando el popular framework BVLC Caffe \cite{jia2014caffe}. Este entorno permite diseñar e implementar redes CNN de forma sencilla, con interfaces disponibles tanto para \textit{MATLAB} como para Python, y soporte para entrenamiento en CPU y GPU. El modelo CNN propuesto se especifica mediante archivos de configuración que definen la estructura de la red y los parámetros de optimización.\\
 
-La arquitectura propuesta consta de cinco capas convolucionales seguidas por dos capas completamente conectadas y una capa softmax de salida. En detalle, la primera capa convolucional utiliza filtros de tamaño 3×3 y genera 64 mapas de características; la segunda también emplea filtros de 3×3 pero produce 96 mapas; la tercera capa, con filtros del mismo tamaño, genera 128 mapas de características; la cuarta capa incrementa esta cifra a 256 mapas, al igual que la quinta capa. Posteriormente, se añaden dos capas completamente conectadas, la primera con 2000 unidades ocultas y la segunda con tantas unidades como clases tenga el conjunto de datos. Finalmente, una capa softmax se encarga de la clasificación. Todas las capas convolucionales y completamente conectadas aplican la función de activación ReLU \texttt{(Rectified Linear Unit)}, definida como: \begin{equation} f(x) = \max(0, x) \end{equation}lo que introduce no linealidades y acelera la convergencia del entrenamiento.\\
+La arquitectura propuesta consta de \textit{5 capas convolucionales} seguidas por dos capas completamente conectadas y una capa softmax de salida. En detalle, la \textit{primera} capa convolucional utiliza filtros de tamaño 3×3 y genera 64 mapas de características; la \textit{segunda} también emplea filtros de 3×3 pero produce 96 mapas; la \textit{tercera} capa, con filtros del mismo tamaño, genera 128 mapas de características; la \textit{cuarta} capa incrementa esta cifra a 256 mapas, al igual que la \textit{quinta} capa. Posteriormente, se añaden dos capas completamente conectadas, la primera con 2000 unidades ocultas y la segunda con tantas unidades como clases tenga el conjunto de datos. Finalmente, una capa softmax se encarga de la clasificación. Todas las capas convolucionales y completamente conectadas aplican la función de activación ReLU \texttt{(Rectified Linear Unit)}, definida como: \begin{equation} f(x) = \max(0, x) \end{equation}lo que introduce no linealidades y acelera la convergencia del entrenamiento.\\
 
 Además, se utiliza max pooling tras las capas convolucionales primera, segunda y quinta. Esta técnica de reducción de dimensión espacial se aplica después de ReLU con un filtro de tamaño 3×3 y un desplazamiento \texttt{(stride)} de 2. Las capas tercera y cuarta no incorporan pooling, probablemente para preservar la resolución espacial de las características extraídas. \\
 
@@ -301,22 +305,29 @@ Esta herramienta permite cargar una imagen desde el dispositivo y realizar un an
 Aquí van las conclusiones.
 
 \section{Autoevaluación de cada miembro del equipo}
+\renewcommand{\tablename}{Tabla}
 
-
-\begin{table}
+\begin{table}[h]
     \centering
-    \begin{tabular}{cccc}
-         &  Lucas&  Marina& Juan Antonio\\
-         Desarrollo&  10&  & 9\\
-         Documentación&  9&  & 8\\
-         Investigación&  10&  & 10\\
-         Presentación&  &  & 10\\
-         Reunión&  10&  & 10\\
-         Seguimiento&  10&  & 6\\
-         Test&  10&  & 10\\
+    \renewcommand{\arraystretch}{1.5}
+    \setlength{\arrayrulewidth}{0.8pt}
+    \rowcolors{2}{gray!10}{white} % Alternar colores de fila
+    \begin{tabular}{lcccc}
+    \toprule
+    \rowcolor{gray!30} % Color de la fila de encabezado
+    \textbf{Actividad} & \textbf{Lucas} & \textbf{Marina} & \textbf{Juan Antonio} \\
+    \midrule
+    Desarrollo & 10 & 8 & 9 \\
+    Documentación & 9 & 8 & 8 \\
+    Investigación & 10 & 10 & 10 \\
+    Presentación & 10 & 10 & 10 \\
+    Reunión & 10 & 10 & 10 \\
+    Seguimiento & 10 & 7 & 6 \\
+    Test & 10 & 10 & 10 \\
+    \bottomrule
     \end{tabular}
-    \caption{Caption}
-    \label{tab:my_label}
+    \caption{Autoevaluación de cada miembro del equipo}
+    \label{tab:evaluacion}
 \end{table}
 
 
