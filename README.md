@@ -29,7 +29,7 @@ images/
 python merge_images_folder.py
 ```
 
-Esto generará una carpeta `binary_scenario_merged/` con las imágenes mezcladas y organizadas por clase.
+Esto generará una carpeta `images/binary_scenario_merged/` con las imágenes mezcladas y organizadas por clase.
 
 ---
 

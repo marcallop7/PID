@@ -10,7 +10,7 @@ from sklearn.manifold import TSNE
 
 IMAGE_SIZE = (256, 256)
 LIMIT_IMAGES = None
-
+MAX_RESULTS = 5
 
 model_path = "models\\training_1.h5"
 
@@ -31,12 +31,12 @@ encoder = Model(inputs=auto_encoder.input, outputs=auto_encoder.get_layer("encod
 def euclidean(a, b):
     return np.linalg.norm(a - b)
 
-def perform_search(query_features, indexed_train, max_results=5):
+def perform_search(query_features, indexed_train):
     retrieved = []
     for idx, feat in enumerate(indexed_train["features"]):
         distance = euclidean(query_features, feat)
         retrieved.append((distance, idx))
-    return sorted(retrieved)[:max_results]
+    return sorted(retrieved)[:MAX_RESULTS]
 
 def most_common(arr):
     return Counter(arr).most_common(1)[0][0]

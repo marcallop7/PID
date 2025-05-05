@@ -42,7 +42,7 @@ Juan Antonio Moreno Moguel \\
 
 % RESUMEN
 \section*{Resumen}
-Este proyecto se enmarca en la asignatura de Procesamiento de Imágenes Digitales (PID) y tiene como objetivo desarrollar un sistema que detecte el cáncer de mama mediante la identificación y comparación de células cancerígenas con células sanas. La metodología se basará en el uso de redes neuronales convolucionales (CNN) para analizar imágenes digitales de tejido mamario y extraer patrones característicos. Se realizan procesos de preprocesamiento y segmentación para aislar las áreas de interés, seguidos de la extracción de características específicas que permitan distinguir entre células malignas y benignas. Con este enfoque, se busca crear una herramienta de apoyo al diagnóstico clínico, que contribuya a una detección temprana y más precisa de la enfermedad.
+Este proyecto se enmarca en la asignatura de Procesamiento de Imágenes Digitales (PID) y tiene como objetivo desarrollar un sistema que detecte el cáncer de mama mediante la identificación y comparación de células cancerígenas con células sanas. La metodología se basará en el uso de redes neuronales convolucionales (CNN) para analizar imágenes digitales de tejido mamario y extraer patrones característicos. Se realizan procesos de preprocesamiento y clasificación según el modelo descrito del documento científico elegido, el cuál será entrenado dependiendo la amplitud respecto al ojo humano de la que se habrá realizado la imagen (x40, x100, x200 y x400), con el cuál se permitirá la clasificación de células malignas y benignas. Con este enfoque, se busca crear una herramienta de apoyo al diagnóstico clínico, que contribuya a una detección temprana y más precisa de la enfermedad.
 
 \vspace{.5cm}
 
@@ -62,17 +62,18 @@ Gracias a los avances en Deep Learning \cite{shinde2018review}, se han desarroll
 
 Este proyecto tiene como objetivo el desarrollo de una aplicación capaz de detectar cáncer de mama a partir de imágenes histológicas, utilizando dos enfoques complementarios. El primero se basa en una red neuronal convolucional (CNN) que realiza clasificación directamente a la imagen, y un segundo enfoque, basado en extracción de características seguida de la clasificación mediante el algoritmo K-Nearest Neighbors (KNN).\\
 
-El enfoque basado en KNN está inspirado en el trabajo de \cite{bardou2018classification}, quienes proponen una combinación entre la codificación de características visuales utilizando técnicas como -bag of words y locality-constrained linear coding— y clasificadores tradicionales. En su estudio, se demostró que la extracción estructurada de características, combinada con métodos como KNN, puede lograr resultados competitivos en la clasificación de imágenes histológicas de cáncer de mama.\\
+El primer enfoque se fundamenta en redes neuronales convolucionales, que han demostrado gran efectividad en la clasificación automática de imágenes biomédicas. Específicamente, el trabajo de \cite{minarno2021cnn} implementa un autoencoder basado en CNN para la recuperación de imágenes de cáncer de mama, permitiendo identificar imágenes similares dentro de grandes bases de datos. Esta capacidad de aprendizaje profundo permite al modelo extraer representaciones jerárquicas y semánticas directamente desde los datos crudos, sin necesidad de ingeniería manual de características.\textbackslash{}
 
-Por otro lado, el segundo enfoque se fundamenta en redes neuronales convolucionales, que han mostrado gran efectividad en la clasificación automática de imágenes biomédicas. Específicamente, el trabajo de \cite{minarno2021cnn} implementa un autoencoder basado en CNN para la recuperación de imágenes de cáncer de mama, permitiendo identificar imágenes similares dentro de grandes bases de datos. Esta capacidad de aprendizaje profundo permite al modelo extraer representaciones jerárquicas y semánticas directamente desde los datos crudos, sin necesidad de ingeniería manual de características.\\
+Este enfoque aprovecha la potencia de las Redes Neuronales Convolucionales (CNN), un tipo de red neuronal feedforward inspirada en la percepción visual \textbackslash{}cite\{hubel1962receptive\}. Las CNN aplican filtros o “kernels” a lo largo de las imágenes para extraer automáticamente patrones y características como bordes, texturas y formas. Esta capacidad de aprender de forma automática elimina la necesidad de una extracción manual de atributos y, al reducir significativamente el número de conexiones en comparación con una red completamente conectada (FC), permite una convergencia más rápida y una actualización de pesos más eficiente durante el entrenamiento.
 
-Este último aprovecha la potencia de las Redes Neuronales Convolucionales (CNN), un tipo de red neuronal feedforward inspirada en la percepción visual \cite{hubel1962receptive}. Las CNN aplican filtros o “kernels” a lo largo de las imágenes para extraer automáticamente patrones y características como bordes, texturas y formas. Esta capacidad de aprender de forma automática elimina la necesidad de una extracción manual de atributos y, al reducir significativamente el número de conexiones en comparación con una red completamente conectada (FC), permite una convergencia más rápida y una actualización de pesos más eficiente durante el entrenamiento (véase Fig. \ref{fig:capas_convolucionales} Capas convolucionales).\\
 \begin{figure}[!ht]
     \centering
     \includegraphics[width=0.8\textwidth]{CNN.png}
     \caption{Capas convolucionales \cite{datacamp_cnn}}
     \label{fig:capas_convolucionales}
-\end{figure}\\
+\end{figure}
+
+Por otro lado, el segundo enfoque está inspirado en el trabajo de \cite{bardou2018classification}, del cuál se ha utilizado parte de su propuesta dedicada a la recuperación de imágenes de células histográficas de cáncer de mama. En concreto, se ha extraído la parte del encoder para poder realizar una adecuada extracción de características de las imágenes, con las cuáles se lleva a cabo posteriormente un análisis mediante KNN utilizando dichas características extraídas.
 
 \newpage
 Ambos enfoques son implementados y evaluados en este proyecto, comparando su rendimiento y su viabilidad para una futura aplicación en el diagnóstico asistido por computadora.\\
@@ -84,18 +85,26 @@ El objetivo de nuestro trabajo es desarrollar una red convolucional capaz de det
 \newpage
 \section{Planteamiento del Teórico}
 \subsection{Objetivos del Proyecto}
-Este trabajo tiene como objetivo principal analizar y comparar diferentes metodologías de clasificación de imágenes médicas, con especial atención en la detección temprana del cáncer de mama. Para ello, se estudian tanto enfoques tradicionales de clasificación basados en extracción manual de características como enfoques modernos basados en aprendizaje profundo. Los objetivos específicos del proyecto son los siguientes:\\
 
+Este trabajo tiene como objetivo principal analizar y comparar diferentes metodologías de clasificación de imágenes médicas, con especial atención en la detección temprana del cáncer de mama. Para ello, se estudian y contrastan dos enfoques representativos: uno híbrido basado en un autoencoder y el algoritmo k-Nearest Neighbors (KNN), y otro basado en redes neuronales convolucionales (CNN).
+
+\textbf{El primer enfoque} emplea un autoencoder como técnica de reducción de dimensionalidad y extracción automática de características. En este esquema, la parte \textit{encoder} del autoencoder extrae una representación comprimida de las imágenes, capturando patrones relevantes de manera no supervisada. Estas representaciones latentes son luego utilizadas como entrada para el clasificador KNN, que asigna una clase a cada imagen en función de la similitud con las representaciones más cercanas en el espacio latente. Este enfoque combina las fortalezas de la codificación no supervisada con la simplicidad del clasificador KNN.
+
+\textbf{El segundo enfoque} se basa en redes neuronales convolucionales (CNN), las cuales aprenden directamente tanto las características como la función de clasificación. Las CNN están especialmente diseñadas para trabajar con datos visuales, y mediante el uso de capas convolucionales, capturan patrones espaciales jerárquicos presentes en las imágenes. Este CNN en concreto será creado a través de las capas descritas en el documento escogido y entrenado posteriormente en 4 diferentes casos dependiendo de la amplitud respecto al ojo humano de la imagen. Gracias a esta capacidad, han demostrado un alto rendimiento en tareas de diagnóstico médico, incluyendo la detección temprana del cáncer de mama.
+
+Los objetivos específicos del proyecto son los siguientes:\\
 
 \begin{enumerate}
-    \item \textbf{Crear} una aplicacion que permita a los médicos detectar el cancer de mama solo dando la imagen.
-    \item \textbf{Desarrollar} distintos modelos que permitan la clasificacion binaria de las imagenes.
+    \item \textbf{Crear} una aplicación que permita a los médicos detectar el cáncer de mama solo dando la imagen.
+    \item \textbf{Desarrollar} distintos modelos que permitan la clasificación binaria de las imágenes.
     \item \textbf{Evaluar} el rendimiento de distintos modelos, tanto CNN en tareas de clasificación binaria como KNN.
     \item \textbf{Realizar experimentación para análisis} del  impacto de las técnicas de aumento de datos sobre el desempeño de los modelos.
-
 \end{enumerate}
+
 \subsection{Tecnologías Utilizadas}
 Para el desarrollo del proyecto se ha utilizado el lenguaje de programación \textbf{Python}, ampliamente adoptado en la comunidad científica por su simplicidad, legibilidad y amplio ecosistema de bibliotecas para el análisis de datos, visión por computador y aprendizaje automático.\\
+
+El desarrollo de la interfaz de nuestra aplicación ha sido desarrollado utilizando \textbf{Tkinter}, permitiendo de esta forma una selección y visualización de resultados cómoda de las imágenes junto a su clasificación en benigna o maligna.
 
 Entre estas bibliotecas, se ha seleccionado \textbf{TensorFlow} como herramienta principal para la implementación y comparación de modelos. TensorFlow es una librería de código abierto desarrollada por Google que permite construir, entrenar y desplegar modelos de \textit{machine learning}, especialmente redes neuronales profundas. Su flexibilidad y eficiencia lo convierten en una plataforma ideal tanto para métodos tradicionales como para arquitecturas más complejas basadas en aprendizaje profundo.\\
 
@@ -176,17 +185,13 @@ De forma específica, el proceso incluye tres pasos fundamentales:\\
 Además, se implementa una política de \textbf{almacenamiento del mejor modelo}, en la cual se guarda la versión del autoencoder que presenta el \textbf{menor valor de pérdida} en el conjunto de validación. Este modelo óptimo se utilizará posteriormente \textbf{para la extracción de características y recuperación de imágenes.}\\
 
 
-\textbf{Extracción de Características para Recuperación y Clasificación:}
+\textbf{Extracción de Características para Clasificación:}
 
-Una vez entrenado, el \textbf{codificador} se desacopla del decodificador y se utiliza de manera independiente para transformar imágenes en vectores latentes. Esta operación consiste en alimentar una imagen al codificador y capturar la activación de su capa más profunda, justo antes de la entrada al decodificador. El vector de salida obtenido en esta etapa representa una \textbf{caracterización compacta} y discriminativa de la imagen de entrada y se conforma de 48 valores, preservando información estructural crucial para la identificación de patrones asociados al cáncer de mama. Estos vectores de características se almacenan en una base de datos y se emplean como entrada para clasificadores como k-NN. En los experimentos realizados, se evaluó la precisión del sistema mediante:
-
-\begin{itemize}
-    \item \textbf{Clasificación binaria} (benigno vs. maligno): alcanzando una precisión promedio de \textbf{$92.37\%$}.
-\end{itemize}
+Una vez entrenado, el \textbf{codificador} se desacopla del decodificador y se utiliza de manera independiente para transformar imágenes en vectores latentes. Esta operación consiste en alimentar una imagen al codificador y capturar la activación de su capa más profunda, justo antes de la entrada al decodificador. El vector de salida obtenido en esta etapa representa una \textbf{caracterización compacta} de la imagen de entrada y se conforma de 48 valores, preservando información estructural crucial para la identificación de patrones asociados al cáncer de mama. Estos vectores de características se almacenan en una base de datos y se emplean como entrada para clasificadores como k-NN.
 
 \textbf{Clasificación mediante k-NN utilizando Vectores Latentes:}
 
-Tras el proceso de extracción de características mediante el autoencoder convolucional, cada imagen del conjunto de datos fue transformada en un vector latente de dimensión reducida, representando las características más relevantes de la imagen histológica. Estos vectores latentes, junto con su etiqueta de clase correspondiente (por ejemplo, benigno o maligno), fueron almacenados en un archivo \textbf{JSON}, actuando como base de datos para el sistema de clasificación.\\
+Tras el proceso de extracción de características mediante el autoencoder convolucional, cada imagen del conjunto de datos fue transformada en un vector latente de dimensión reducida, representando las características más relevantes de la imagen histológica. Estos vectores latentes, junto con su etiqueta de clase correspondiente (benigno o maligno), fueron almacenados en archivos \textbf{JSON}, actuando como base de datos para el sistema de clasificación.\\
 
 Para realizar la clasificación de una nueva imagen, se sigue el siguiente procedimiento:
 
@@ -207,32 +212,39 @@ Para realizar la clasificación de una nueva imagen, se sigue el siguiente proce
 Este enfoque no requiere un entrenamiento explícito del clasificador, ya que el método k-NN funciona de forma \textbf{perezosa} (lazy learning), basándose directamente en las instancias almacenadas y las comparaciones entre vectores. Gracias a la alta calidad de las características extraídas por el autoencoder, el sistema logra clasificaciones precisas sin necesidad de arquitecturas más complejas.
 
 \subsection{Evaluación del Sistema}
-Los modelos fueron evaluados mediante un conjunto de métricas de clasificación binaria:
+Los modelos fueron evaluados mediante un conjunto de métricas de clasificación binaria, entendiendo que los benignos serán los casos negativos y los malignos los casos positivos:
 
 \begin{enumerate}
     \item \textbf{Precisión (accuracy):} mide la proporción de predicciones correctas respecto al total de muestras evaluadas. Se calcula como:
     \begin{equation}
-        \text{acc} = \frac{VP + VN}{n} = \frac{R_v}{n}
+        \text{accuracy} = \frac{VP + VN}{VP + VN + FP + FN}
     \end{equation}
+    
     \item \textbf{Sensibilidad (recall):} evalúa la capacidad del modelo para identificar correctamente las muestras positivas. Se calcula como:
     \begin{equation}
-        \text{recall } = \frac{R_v}{M}
+        \text{recall} = \frac{VP}{VP + FN}
     \end{equation}
-    \item \textbf{Especificidad:} cuantifica la proporción de muestras negativas que fueron correctamente clasificadas. Scalcula como:
+    
+    \item \textbf{Precisión (precision):} cuantifica la proporción de muestras clasificadas como positivas que realmente lo son. Se calcula como:
     \begin{equation}
-        \text{prec} = \frac{VN}{VN + FP}
+        \text{precision} = \frac{VP}{VP + FP}
     \end{equation}
+    
     \item \textbf{F1 Score:} proporciona una medida balanceada entre la precisión y la sensibilidad, siendo especialmente útil en contextos donde existe un desequilibrio entre clases. Se calcula como:
     \begin{equation}
-        F1 = 2 \cdot \frac{\text{prec} \cdot \text{recall}}{\text{prec} + \text{recall}}
+        F1 = 2 \cdot \frac{\text{precision} \cdot \text{recall}}{\text{precision} + \text{recall}}
     \end{equation}
 \end{enumerate}
 
+
+
 Estas métricas fueron calculadas de forma individual para cada uno de los modelos entrenados, lo que permitió realizar un análisis cuantitativo del impacto que tiene el tipo de arquitectura como \textit{K-Nearest Neighbors} (KNN) y \textit{Convolutional Neural Networks} (CNN) sobre el rendimiento en la tarea de clasificación. \\
 
-Adicionalmente, se evaluó la influencia de distintos niveles de \textit{data augmentation} aplicados a las imágenes de entrada, con el fin de observar cómo afectan la capacidad de generalización de los modelos.\\
+Adicionalmente, se evaluó la influencia de distintos niveles de \textit{data augmentation} aplicados a las imágenes de entrada, tanto para KNN como con CNN con el fin de observar cómo afectan la capacidad de generalización de los modelos.\\
 
-Además, se llevó a cabo un análisis de robustez para estudiar el comportamiento de los modelos ante variaciones morfológicas y diferencias en la resolución entre las imágenes. Esta evaluación buscó determinar en qué medida los modelos eran capaces de mantener un rendimiento aceptable frente a datos que presentan una alta variabilidad estructural, un aspecto crucial en contextos donde los datos de entrada no son homogéneos ni ideales.
+Como parte del trabajo, se llevó a cabo una experimentación adicional orientada a evaluar el impacto de una integración más profunda entre los enfoques basados en KNN y CNN. En esta etapa, se creó un sistema de almacenamiento que registró todas las representaciones extraídas de las imágenes mediante el modelo KNN, sin restricciones en cuanto a la dimensión o amplitud de dichas características. Paralelamente, se entrenó un modelo CNN utilizando la totalidad del conjunto de imágenes disponibles, y se extrajeron los pesos resultantes tras el entrenamiento completo del modelo. Esta experimentación se realizó con el fin de observar qué resultados podían obtenerse al disponer de ambas fuentes de representación, y explorar su posible utilidad en tareas de clasificación médica. 
+
+ 
 
 \section{Experimentación}
 Para llevar a cabo la experimentación, se realizaron pruebas sobre un conjunto de datos al que se le aplicará \textit{data augmentation} con el objetivo de evaluar la robustez y capacidad de generalización de los modelos. Las técnicas de aumento de datos incluirán transformaciones como rotaciones de un rango entre $-30^\circ$ a $30^\circ$ y modificaciones en la intensidad de las imágenes, con un factor de entre $0.7$ (oscurece) a $1.3$ (ilumina), simulando variaciones realistas que podrían encontrarse en escenarios del mundo real. Esto permitirá analizar cómo afecta la variabilidad de entrada al rendimiento de los modelos evaluados. \\
