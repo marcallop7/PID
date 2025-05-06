@@ -1,6 +1,9 @@
 from tensorflow.keras.models import load_model # type: ignore
 import os
 
+# En caso de haber descargado los modelos de forma completa en vez de solo los pesos, es necesario realizar esta función
+# para la extracción de los pesos.
+
 # Rutas corregidas según tu sistema
 rutas_modelos = [
     './modelo_cnn_40x.h5',
