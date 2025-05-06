@@ -9,6 +9,8 @@
 \usepackage{hyperref} % Para enlaces y referencias en el índice
 \usepackage{titling}  % Para personalizar la portada
 \usepackage{geometry} % Márgenes
+\usepackage{longtable}
+\usepackage{multirow}
 \usepackage{titlesec} % Para personalizar títulos
 \usepackage{xcolor}
 \usepackage[backend=bibtex,style=ieee]{biblatex}
@@ -307,29 +309,30 @@ Aquí van las conclusiones.
 \section{Autoevaluación de cada miembro del equipo}
 \renewcommand{\tablename}{Tabla}
 
-\begin{table}[h]
-    \centering
-    \renewcommand{\arraystretch}{1.5}
-    \setlength{\arrayrulewidth}{0.8pt}
-    \rowcolors{2}{gray!10}{white} % Alternar colores de fila
-    \begin{tabular}{lcccc}
-    \toprule
-    \rowcolor{gray!30} % Color de la fila de encabezado
-    \textbf{Actividad} & \textbf{Lucas} & \textbf{Marina} & \textbf{Juan Antonio} \\
-    \midrule
-    Desarrollo & 10 & 8 & 9 \\
-    Documentación & 9 & 8 & 8 \\
-    Investigación & 10 & 10 & 10 \\
-    Presentación & 10 & 10 & 10 \\
-    Reunión & 10 & 10 & 10 \\
-    Seguimiento & 10 & 7 & 6 \\
-    Test & 10 & 10 & 10 \\
-    \bottomrule
-    \end{tabular}
-    \caption{Autoevaluación de cada miembro del equipo}
-    \label{tab:evaluacion}
-\end{table}
-
+\begin{tabular}{|m{5cm}|m{3.5cm}|m{3.5cm}|m{3.5cm}|}
+    \hline
+    \textbf{Criterio} & \textbf{Lucas Manuel} \newline \textbf{Herencia Solís} & \textbf{Marina Calero} \newline \textbf{López} & \textbf{Juan Antonio} \newline \textbf{Moreno Moguel} \\
+    \hline
+    Comprensión y dominio & Excelente & & \\
+    \hline
+    Exposición didáctica & Excelente & & \\
+    \hline
+    Integración del equipo & Excelente & & \\
+    \hline
+    Objetivos & Excelente & & \\
+    \hline
+    Aspectos didácticos & Excelente & & \\
+    \hline
+    Experimentación y conclusiones & Excelente & & \\
+    \hline
+    Contenidos & Excelente & & \\
+    \hline
+    Divulgación de contenidos & Excelente & & \\
+    \hline
+    Bibliografía / Recursos científicos & Excelente & & \\
+    \hline
+    
+\end{tabular}
 
 \section{Tabla de tiempos}
 Aquí van las conclusiones.
