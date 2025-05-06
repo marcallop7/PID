@@ -141,17 +141,149 @@ Esta configuración permite:
 ---
 
 ## 📊 Evaluación del Modelo
+### Métricas de Evaluación
 
-Las métricas de evaluación incluyen:
+- **Accuracy (Precisión Global):**  
+    Proporción de predicciones correctas sobre el total de predicciones realizadas. Mide qué tan bien el modelo clasifica en general.  
+    **Fórmula:**  
+    `Accuracy = (TP + TN) / (TP + TN + FP + FN)`
 
-- **Accuracy (Precisión Global)**
-- **F1 Score**
-- **Recall (Sensibilidad)**
-- **Precision (Precisión por Clase)**
+- **Recall (Sensibilidad):**  
+    Proporción de verdaderos positivos detectados sobre el total de positivos reales. Indica la capacidad del modelo para identificar correctamente los casos positivos.  
+    **Fórmula:**  
+    `Recall = TP / (TP + FN)`
+
+- **Precision (Precisión por Clase):**  
+    Proporción de verdaderos positivos sobre el total de predicciones positivas. Evalúa la exactitud de las predicciones positivas del modelo.  
+    **Fórmula:**  
+    `Precision = TP / (TP + FP)`
+
+- **F1 Score:**  
+    Media armónica entre la precisión y el recall. Es útil cuando hay un desequilibrio entre las clases.  
+    **Fórmula:**  
+    `F1 = 2 * (Precision * Recall) / (Precision + Recall)`
+
+Donde:  
+- **TP:** Verdaderos Positivos  
+- **TN:** Verdaderos Negativos  
+- **FP:** Falsos Positivos  
+- **FN:** Falsos Negativos
 
 ### Escenarios de evaluación:
-1. **Con datos originales**
-2. **Con datos aumentados** (rotaciones, escalados, etc.)
+1. **Con datos originales**  
+### Estructura de la Carpeta `images`
+
+La carpeta `images` contiene las imágenes utilizadas para el entrenamiento y prueba del modelo. Su estructura es la siguiente:
+
+```
+images/
+├── binary_scenario/
+│   ├── train/
+│   │   ├── 40X/
+│   │   │   ├── benign/
+│   │   │   └── malignant/
+│   │   ├── 100X/
+│   │   │   ├── benign/
+│   │   │   └── malignant/
+│   │   ├── 200X/
+│   │   │   ├── benign/
+│   │   │   └── malignant/
+│   │   └── 400X/
+│   │       ├── benign/
+│   │       └── malignant/
+│   ├── val/
+│   │   ├── 40X/
+│   │   │   ├── benign/
+│   │   │   └── malignant/
+│   │   ├── 100X/
+│   │   │   ├── benign/
+│   │   │   └── malignant/
+│   │   ├── 200X/
+│   │   │   ├── benign/
+│   │   │   └── malignant/
+│   │   └── 400X/
+│   │       ├── benign/
+│   │       └── malignant/
+│   └── test/
+│       ├── 40X/
+│       │   ├── benign/
+│       │   └── malignant/
+│       ├── 100X/
+│       │   ├── benign/
+│       │   └── malignant/
+│       ├── 200X/
+│       │   ├── benign/
+│       │   └── malignant/
+│       └── 400X/
+│           ├── benign/
+│           └── malignant/
+└── binary_scenario_merged/
+    ├── train/
+    │   ├── benign/
+    │   └── malignant/
+    ├── val/
+    │   ├── benign/
+    │   └── malignant/
+    └── test/
+        ├── benign/
+            └── malignant/
+```
+
+#### Descripción:
+- **`binary_scenario/`:**  
+    Contiene las imágenes originales organizadas en carpetas separadas para entrenamiento (`train/`), validación (`val/`) y prueba (`test/`), cada una dividida por niveles de ampliación (`40X/`, `100X/`, `200X/`, `400X/`):
+    - **`train/`:** Imágenes utilizadas para entrenar el modelo, organizadas por ampliación y clase:
+    - **`benign/`:** Imágenes de células benignas.
+    - **`malignant/`:** Imágenes de células malignas.
+    - **`val/`:** Imágenes utilizadas para validar el modelo durante el entrenamiento, organizadas de manera similar a `train/`.
+    - **`test/`:** Imágenes utilizadas para evaluar el modelo, organizadas de manera similar a `train/`.
+
+- **`binary_scenario_merged/`:**  
+    Carpeta generada tras ejecutar el script `merge_images_folder.py`. Contiene las imágenes de entrenamiento, validación y prueba unificadas y organizadas por clase:
+    - **`train/`:** Imágenes de entrenamiento unificadas:
+    - **`benign/`:** Todas las imágenes de células benignas.
+    - **`malignant/`:** Todas las imágenes de células malignas.
+    - **`val/`:** Imágenes de validación unificadas, organizadas por clase.
+    - **`test/`:** Imágenes de prueba unificadas, organizadas por clase.
+
+Esta estructura facilita la manipulación y el acceso a las imágenes durante las etapas de entrenamiento, validación, prueba y análisis.
+
+El conjunto de datos contiene casi 8,000 imágenes, distribuidas entre las diferentes carpetas y clases, lo que proporciona una base sólida para entrenar y evaluar los modelos.
+
+2. **Con datos aumentados** (rotaciones, escalados, etc.)  
+Para aumentar los datos se ha aplicado la técnica de **data augmentation**, es una técnica utilizada para incrementar la cantidad y diversidad de datos de entrenamiento mediante transformaciones como rotaciones, escalados, volteos, y cambios de brillo o contraste en las imágenes originales. Esto ayuda a mejorar la generalización del modelo y su capacidad para manejar variaciones en los datos reales.
+
+### Resultados de Evaluación
+
+#### Modelos sin Aumento de Datos
+
+| Archivo                  | Accuracy   | F1 Score   | Precision  | Recall     |
+|--------------------------|------------|------------|------------|------------|
+| modelo_cnn_100x          | 0.7638     | 0.7670     | 0.7722     | 0.7638     |
+| modelo_cnn_200x          | 0.8141     | 0.8074     | 0.8090     | 0.8141     |
+| modelo_cnn_400x          | 0.8141     | 0.8001     | 0.8150     | 0.8141     |
+| modelo_cnn_40x           | 0.8141     | 0.8001     | 0.8150     | 0.8141     |
+| modelo_cnn_all           | 0.8241     | 0.8093     | 0.8304     | 0.8241     |
+| modelo_knn_100x          | 0.8986     | 0.9293     | 0.8961     | 0.9650     |
+| modelo_knn_200x          | 0.8806     | 0.9124     | 0.9259     | 0.8993     |
+| modelo_knn_400x          | 0.8950     | 0.9237     | 0.9127     | 0.9350     |
+| modelo_knn_40x           | 0.9045     | 0.9304     | 0.9338     | 0.9270     |
+| modelo_knn_all           | 0.9010     | 0.9293     | 0.9128     | 0.9465     |
+
+#### Modelos con Aumento de Datos
+
+| Archivo                  | Accuracy   | F1 Score   | Precision  | Recall     |
+|--------------------------|------------|------------|------------|------------|
+| modelo_cnn_aug_100x      | 0.8280     | 0.8285     | 0.8290     | 0.8280     |
+| modelo_cnn_aug_200x      | 0.8239     | 0.8236     | 0.8234     | 0.8239     |
+| modelo_cnn_aug_400x      | 0.8044     | 0.7817     | 0.8219     | 0.8044     |
+| modelo_cnn_aug_40x       | 0.7809     | 0.7626     | 0.7758     | 0.7809     |
+| modelo_cnn_aug_all       | 0.7911     | 0.7747     | 0.7877     | 0.7911     |
+| modelo_knn_aug_100x      | 0.4966     | 0.5126     | 0.7740     | 0.3832     |
+| modelo_knn_aug_200x      | 0.7194     | 0.8291     | 0.7162     | 0.9842     |
+| modelo_knn_aug_400x      | 0.4177     | 0.2869     | 0.8548     | 0.1724     |
+| modelo_knn_aug_40x       | 0.6814     | 0.8061     | 0.6937     | 0.9620     |
+| modelo_knn_aug_all       | 0.4211     | 0.3144     | 0.8476     | 0.1930     |
 
 ---
 
