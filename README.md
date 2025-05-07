@@ -318,8 +318,8 @@ Los resultados se almacenan en:
 
 ```
 outputs/features/
-├── pca_results.png
-└── tsne_results.png
+├── pca/
+└── tsne/
 ```
 
 ---
