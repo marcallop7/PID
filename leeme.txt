@@ -59,8 +59,6 @@ Las características de las imágenes existentes pueden encontrar aquí:
 
 🔗 [Características para KNN](https://drive.google.com/drive/folders/16bp6vsNZt_4Db3iaqz9Adn1j0Fxet9n7)
 
-Además de encontrarse por defecto en la ruta `models/features`
-
 Este modelo fue tomado del repositorio original:  
 📦 https://github.com/forderation/breast-cancer-retrieval
 
@@ -69,17 +67,6 @@ Este modelo fue tomado del repositorio original:
 Los diferentes pesos según la amplitud de la imagen para el modelo CNN:
 
 🔗 [Pesos entranimento CNN](https://drive.google.com/drive/folders/1jemlQFu66oN8CJAz7ka0WGnAwgU-GPaq)
-
-Estos pesos deben de almacenarse en la carpeta saved_weights de la forma
-
-```
-saved_weights/
-├─── modelo_cnn_40x.weights.h5
-├─── modelo_cnn_100x.weights.h5
-├─── modelo_cnn_200x.weights.h5
-├─── modelo_cnn_400x.weights.h5
-└─── modelo_cnn_all.weights.h5
-```
 
 ---
 
@@ -103,7 +90,7 @@ python -m venv venv
 # Activar entorno (Windows)
 .\env\Scripts\activate
 
-# Desactivar entorno (Windows)
+# Desactivar entorno
 .\env\Scripts\deactivate
 ```
 
@@ -123,7 +110,7 @@ Asegúrate de haber instalado previamente todos los requisitos.
 
 ## 🧠 Entrenamiento del Modelo
 
-Para entrenar una red neuronal convolucional desde cero, descarga las imágenes como se indica anteriormente, modifica los parámetros como se indicará en el siguiente punto y ejecuta:
+Para entrenar una red neuronal convolucional desde cero, descarga las imágenes como se indica anteriormente y ejecuta:
 
 ```bash
 python train_cnn.py
@@ -156,8 +143,8 @@ El entrenamiento del modelo se ajusta dinámicamente según los valores de los a
 
 #### Flexibilidad
 Esta configuración permite:
-- Controlar qué tipo de datos se utilizan durante el entrenamiento. Esto debido a que el procesamiento de cada uno de ellos lleva un tiempo prolongado.
-- Elegir la forma en la que se almacena el resultado final del modelo, ya sea completo o solo sus pesos. El programa inicialmente guardaba el modelo completo, pero para mejor uso de memoria se decidió una migración a que únicamente se guardasen los pesos. Sin embargo, en caso de que algún usuario vea de utilidad la obtención del modelo completo guardado, podrá obtenerlo cambiando las variables.
+- Controlar qué tipo de datos se utilizan durante el entrenamiento.
+- Elegir la forma en la que se almacena el resultado final del modelo, ya sea completo o solo sus pesos.
 
 
 ---
@@ -165,19 +152,17 @@ Esta configuración permite:
 ## 📊 Evaluación del Modelo
 ### Métricas de Evaluación
 
-Las métricas siguiente son mostradas tomando como caso positivo a que el resultado sea maligno.
-
-- **Accuracy:**  
+- **Accuracy (Precisión Global):**  
     Proporción de predicciones correctas sobre el total de predicciones realizadas. Mide qué tan bien el modelo clasifica en general.  
     **Fórmula:**  
     `Accuracy = (TP + TN) / (TP + TN + FP + FN)`
 
-- **Recall:**  
+- **Recall (Sensibilidad):**  
     Proporción de verdaderos positivos detectados sobre el total de positivos reales. Indica la capacidad del modelo para identificar correctamente los casos positivos.  
     **Fórmula:**  
     `Recall = TP / (TP + FN)`
 
-- **Precision:**  
+- **Precision (Precisión por Clase):**  
     Proporción de verdaderos positivos sobre el total de predicciones positivas. Evalúa la exactitud de las predicciones positivas del modelo.  
     **Fórmula:**  
     `Precision = TP / (TP + FP)`
@@ -234,15 +219,23 @@ images/
     │   └── malignant/
     └── test/
         ├── benign/
-        └── malignant/
+            └── malignant/
 ```
 
 #### Descripción:
 - **`binary_scenario/`:**  
-    Contiene las imágenes originales organizadas en carpetas separadas para entrenamiento (`train/`) y prueba (`test/`), cada una dividida por niveles de ampliación (`40X/`, `100X/`, `200X/`, `400X/`), siendo estas a su vez dividias en malignas o benignas (`/malignant`, `/benign`).
+    Contiene las imágenes originales organizadas en carpetas separadas para entrenamiento (`train/`), validación (`val/`) y prueba (`test/`), cada una dividida por niveles de ampliación (`40X/`, `100X/`, `200X/`, `400X/`):
+    - **`train/`:** Imágenes utilizadas para entrenar el modelo, organizadas por ampliación y clase:
+    - **`benign/`:** Imágenes de células benignas.
+    - **`malignant/`:** Imágenes de células malignas.
+    - **`test/`:** Imágenes utilizadas para evaluar el modelo, organizadas de manera similar a `train/`.
 
 - **`binary_scenario_merged/`:**  
-    Carpeta generada tras ejecutar el script `merge_images_folder.py`. Contiene las imágenes de entrenamiento, y prueba unificadas y organizadas por malignas o benignas (`/malignant`, `/benign`).
+    Carpeta generada tras ejecutar el script `merge_images_folder.py`. Contiene las imágenes de entrenamiento, validación y prueba unificadas y organizadas por clase:
+    - **`train/`:** Imágenes de entrenamiento unificadas:
+    - **`benign/`:** Todas las imágenes de células benignas.
+    - **`malignant/`:** Todas las imágenes de células malignas.
+    - **`test/`:** Imágenes de prueba unificadas, organizadas por clase.
 
 Esta estructura facilita la manipulación y el acceso a las imágenes durante las etapas de entrenamiento, validación, prueba y análisis.
 
@@ -287,9 +280,7 @@ Para aumentar los datos se ha aplicado la técnica de **data augmentation**, es 
 
 ### Visualización de Resultados
 
-1. Ejecuta el análisis de características para recorrer todos los test:
-
-**Nota:** Si prefieres ver la matríz de confusión resultante de la ejecución de alguno de los test. Puedes dirigirte a sus archivos y cambiar en el fragmento de ejecución la variable `show_metrics` a `True`. Por defecto en el proyecto se encuentra en `False`.
+1. Ejecuta el análisis de características:
 
 ```bash
 python analice.py
@@ -301,7 +292,7 @@ python analice.py
 python metrics.py
 ```
 
-Esto guardará graficas de cómo afecta el aumento de datos al rendimiento del modelo guardandolo en la ruta `outputs/metrics`.
+Esto mostrará visualmente cómo afecta el aumento de datos al rendimiento del modelo guardandolo en la ruta `outputs/metrics`.
 
 ---
 
@@ -318,8 +309,8 @@ Los resultados se almacenan en:
 
 ```
 outputs/features/
-├── pca/
-└── tsne/
+├── pca_results.png
+└── tsne_results.png
 ```
 
 ---
