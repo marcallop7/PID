@@ -18,4 +18,3 @@ docs/**
 !docs/documento.tex
 !docs/**/*.png
 !docs/bibliografia.bib
-!docs/**/*.pdf
