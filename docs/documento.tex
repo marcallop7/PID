@@ -20,7 +20,9 @@
 \usepackage[table]{xcolor}
 \usepackage{booktabs}
 \usepackage{array}
-
+\usepackage{rotating}
+\usepackage{adjustbox}
+\usepackage{makecell}
 % Personalización del título en la portada
 \newcommand{\customtitlefont}{\fontsize{40pt}{42pt}\selectfont\bfseries} % Cambia el tamaño y estilo
 
@@ -66,21 +68,19 @@ Este proyecto se enmarca en la asignatura de Procesamiento de Imágenes Digitale
 \section{Introducción}
 El cáncer de mama es una de las principales causas de mortalidad en el mundo, habiendo sido la responsable de 670.000 muertes en 2022 siendo a su vez el tipo de cáncer más común en las mujeres según \cite{who_breast_cancer}. Esto provoca que durante los últimos años se haya estado realizando una labor social enorme referente a la concienciación sobre el cáncer de mama dando gran importancia a su pronta detección.\\
 
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.49\textwidth]{introduccion.png}
+    \caption{Cifras de la OMS \cite{who_breast_cancer}}
+    \label{fig:OMS}
+\end{figure}
+
 Gracias a los avances en Deep Learning \cite{shinde2018review}, se han desarrollado métodos innovadores para analizar imágenes histológicas y detectar el cáncer de mama. En este contexto, existen dos aproximaciones que se han estudiado en la literatura, como en el artículo \textit{\textbf{“Classification of breast cancer based on histology images using convolutional neural networks”}} \cite{bardou2018classification}, soportada por los 445 artículos en los que se realiza un estudio entre dos enfoques.\\
 
 Con el objetivo de desarrollar una aplicación capaz de detectar cáncer de mama a partir de imágenes histológicas, utilizaremos dos enfoques distintos. El \textit{primer enfoque} se basa en una red neuronal convolucional (\textbf{CNN}), construida desde cero siguiendo la arquitectura de \cite{bardou2018classification}, que permite realizar una clasificación directa de las imágenes entre tejido benigno y maligno. El \textit{segundo enfoque} emplea un modelo autoencoder convolucional preentrenado, obtenido desde un repositorio en línea, del cual se extrae la capa de menor dimensionalidad conocida como cuello de botella. Esta representación comprimida de las imágenes, siendo un espacio latente de 48 dimensiones, se utiliza como entrada para el algoritmo K-Nearest Neighbors (\textbf{KNN}), que permite clasificar nuevas muestras en función de su similitud con otras ya conocidas.\\
 
 Ambos métodos son implementados y evaluados con el objetivo de comparar su rendimiento, eficiencia y aplicabilidad dentro de un sistema de diagnóstico asistido por computadora. Esta comparación busca no solo medir la precisión, sino también explorar qué tipo de arquitectura resulta más adecuada para un entorno clínico real, donde la interpretabilidad, la escalabilidad y el tiempo de respuesta son factores clave.
 \\
-
-\begin{figure}[!ht]
-    \centering
-    \includegraphics[width=0.8\textwidth]{CNN.png}
-    \caption{Capas convolucionales \cite{datacamp_cnn}}
-    \label{fig:capas_convolucionales}
-\end{figure}
-
-\newpage
 \section{Planteamiento del Teórico}
 \subsection{Objetivos del Proyecto}
 
@@ -102,9 +102,17 @@ El desarrollo de la interfaz de nuestra aplicación ha sido desarrollado utiliza
 
 Entre estas bibliotecas, se ha seleccionado \textbf{TensorFlow}\cite{tensorflow_org} como herramienta principal para la implementación y comparación de modelos. TensorFlow es una librería de código abierto desarrollada por Google que permite construir, entrenar y desplegar modelos de \textit{machine learning}, especialmente redes neuronales profundas. Su flexibilidad y eficiencia lo convierten en una plataforma ideal tanto para métodos tradicionales como para arquitecturas más complejas basadas en aprendizaje profundo.\\
 
+\newpage
 \subsection{Redes Neuronales Convolucionales (CNN)}
 Una \textbf{Red Neuronal Convolucional} (CNN, por sus siglas en inglés) son una clase especializada de redes neuronales artificiales diseñadas para procesar datos con una estructura de tipo cuadrícula, siendo las imágenes un ejemplo típico. A diferencia de las redes neuronales tradicionales, las CNN son capaces de aprovechar la correlación espacial entre píxeles para identificar patrones jerárquicos, lo que las convierte en una herramienta sumamente eficaz en tareas de visión por computadora, análisis biomédico, reconocimiento de voz, entre otras aplicaciones.\\
 
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.65\textwidth]{CNN.png}
+    \caption{Capas convolucionales \cite{datacamp_cnn}}
+    \label{fig:capas_convolucionales}
+\end{figure}
 La arquitectura típica de una CNN está compuesta por una secuencia de capas que extraen representaciones abstractas de los datos de entrada. La primera etapa esencial en una CNN es la capa convolucional. Esta capa aplica filtros o \textit{“kernels”}, que recorren la imagen de entrada realizando una operación matemática denominada convolución. Cada filtro aprende a detectar características locales específicas, como formas, texturas o regiones de contraste. El resultado de esta operación es un conjunto de mapas de activación que reflejan la presencia de determinadas características en distintas regiones de la imagen \cite{lecun1998gradient}. \\
 
 Tras la convolución, se aplica comúnmente una función de activación no lineal. La más utilizada en redes modernas es la función \textbf{ReLU} (Rectified Linear Unit), que introduce no linealidades en el modelo al anular los valores negativos. Esta operación permite a la red aprender representaciones más complejas que no podrían modelarse únicamente con funciones lineales \cite{nair2010rectified}. Sin embargo, una limitación conocida de ReLU es que, si las entradas son negativas, la función devuelve cero, lo que puede causar que algunas neuronas dejen de actualizarse durante el entrenamiento, un fenómeno conocido como el "\textit{problema de las neuronas muertas}". Para mitigar esta situación, se utiliza con frecuencia una variante llamada \textbf{Leaky ReLU}, la cual modifica la función para que permita un pequeño gradiente también en la región negativa. Matemáticamente, se define como: \[
@@ -128,13 +136,20 @@ En el apartado de Implementación se describe detalladamente como se ha construi
 
 
 \subsection{Autoencoder}
-La estructura básica de un autoencoder consta de dos componentes principales: un codificador (\textbf{encoder}) y un decodificador (\textbf{decoder}). El codificador actúa de manera análoga a las primeras capas de una \textit{CNN}, tomando la entrada y transformándose progresivamente en una representación de menor dimensionalidad. Esta representación comprimida se denomina \textbf{espacio latente}, y constituye el núcleo informativo del autoencoder. Es en este espacio donde se concentran las características más relevantes de la entrada, de manera que, incluso tras eliminar redundancias o ruido, se retiene la información esencial \cite{bank2023autoencoders}. \\
+La estructura básica de un autoencoder consta de dos componentes principales (como muestra la Figura \ref{fig:autoencoder}): un codificador (\textbf{encoder}) y un decodificador (\textbf{decoder}). El codificador actúa de manera análoga a las primeras capas de una \textit{CNN}, tomando la entrada y transformándose progresivamente en una representación de menor dimensionalidad. Esta representación comprimida se denomina \textbf{espacio latente}, y constituye el núcleo informativo del autoencoder. Es en este espacio donde se concentran las características más relevantes de la entrada, de manera que, incluso tras eliminar redundancias o ruido, se retiene la información esencial \cite{bank2023autoencoders}. \\
 
 En aplicaciones que integran CNN con autoencoders frecuentemente llamadas \textbf{convolutional autoencoders}, el codificador suele incluir capas convolucionales que permiten aprovechar las estructuras espaciales locales, de forma similar a una CNN estándar. Este diseño no solo reduce la dimensionalidad, sino que también conserva información espacial crítica para la reconstrucción posterior \cite{masci2011stacked}. \\
 
 El \textbf{espacio latente} cumple una función crucial: actúa como un cuello de botella que obliga al modelo a aprender una codificación eficiente. A diferencia de una simple reducción de tamaño, esta compresión es aprendida automáticamente por la red en función de su capacidad para reconstruir los datos de entrada. Por esta razón, la calidad de la representación latente determina directamente el rendimiento del autoencoder. Si la codificación es adecuada, el decodificador será capaz de reconstruir la entrada con alta fidelidad, incluso cuando se utilice una representación mucho más compacta \cite{hinton2006reducing,goodfellow2016deep}. \\
 
 El \textbf{decodificador}, por su parte, invierte el proceso realizado por el codificador. A partir del espacio latente, genera una reconstrucción de la entrada original utilizando capas que gradualmente expanden la dimensionalidad. En autoencoders convolucionales, esta expansión se realiza mediante \textbf{capas convolucionales transpuestas} o \textbf{upsampling}, que permiten reconstruir las estructuras espaciales originales. A diferencia del codificador, que se enfoca en extraer características, el decodificador se centra en aprender cómo esas características pueden combinarse para generar una salida coherente \cite{masci2011stacked}. \\
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{autoencoder.png}
+    \caption{Autoencoder\cite{janosh_autoencoder}}
+    \label{fig:autoencoder}
+\end{figure}
 
 \subsection{K-Nearest Neighbours (KNN)}
 El algoritmo \textbf{K-Nearest Neighbors} (k-NN) es uno de los métodos más simples y efectivos dentro del aprendizaje automático supervisado. A diferencia de modelos como las redes neuronales, que requieren un proceso de entrenamiento explícito, el k-NN es un método perezoso (\textit{lazy learner}), es decir, no construye un modelo a priori, sino que realiza la clasificación directamente a partir de los datos de entrenamiento disponibles \cite{cover1967nearest}. \\
@@ -268,39 +283,87 @@ Para llevar a cabo la experimentación, se realizaron pruebas sobre un conjunto 
 
 En esta etapa, se llevará a cabo una comparación de rendimiento entre dos enfoques de clasificación: una red neuronal convolucional (\textit{CNN}) entrenada sobre cada variedad de las imágenes aumentadas y un entrenamiento con todas las imágenes en global, y un modelo \textit{K-Nearest Neighbors} (\textit{KNN}) diseñado de forma personalizada para cada uno de las posibles variaciones de imágenes respecto a su aumento. Esta comparación permitirá observar las diferencias entre un enfoque basado en aprendizaje profundo y otro basado en métodos clásicos de aprendizaje supervisado, en cuanto a métricas de \textit{precisión}, \textit{recall} y \textit{F1-score}.
 
-A continuación se muestran los resultados de las pruebas realizadas para entender de mejor manera la robustez y adaptabilidad de los distintos modelos
+A continuación se muestran los resultados de las pruebas realizadas para entender de mejor manera la robustez y adaptabilidad de los distintos modelos:
 
-% TODO: meter imagenes de resultados, primero las de la grafica de barras y despues la de puntos
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.7\textwidth]{comparison_all.png}
+    \caption{Métrica para CNN y KNN al ser probados con el dataset completo y con el dataset aumentado.}
+    \label{fig:figura1}
+\end{figure}
 
-Fig 1. Métrica para CNN y KNN al ser probados con el dataset completo y con el dataset aumentado (estos son los que contienen aug en su nombre)
+\newpage
+\begin{figure}[!ht]
+    \centering
+    \begin{minipage}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{comparison_40x.png}
+        \caption{Métrica para CNN y KNN al ser probados con el dataset de 40X y con el dataset aumentado.}
+        \label{fig:figura2}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{comparison_100x.png}
+        \caption{Métrica para CNN y KNN al ser probados con el dataset de 100X y con el dataset aumentado.}
+        \label{fig:figura3}
+    \end{minipage}
+    \vspace{0.5cm}
+    \begin{minipage}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{comparison_200x.png}
+        \caption{Métrica para CNN y KNN al ser probados con el dataset de 200X y con el dataset aumentado.}
+        \label{fig:figura4}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{comparison_400x.png}
+        \caption{Métrica para CNN y KNN al ser probados con el dataset de 400X y con el dataset aumentado.}
+        \label{fig:figura5}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{accuracy_comparativa_puntos.png}
+        \caption{Comparación de accuracy}
+        \label{fig:figura6}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{precision_comparativa_puntos.png}
+        \caption{Comparación de precision}
+        \label{fig:figura7}
+    \end{minipage}
+    \vspace{0.5cm}
+    \begin{minipage}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{recall_comparativa_puntos.png}
+        \caption{Comparación de Recall}
+        \label{fig:figura8}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{f1_score_comparativa_puntos.png}
+        \caption{Comparación de F1 Score}
+        \label{fig:figura9}
+    \end{minipage}
+\end{figure}
 
-Fig 2. Métrica para CNN y KNN al ser probados con el dataset de 40X y con el dataset aumentado (estos son los que contienen aug en su nombre)
-
-Fig 3. Métrica para CNN y KNN al ser probados con el dataset de 100X y con el dataset aumentado (estos son los que contienen aug en su nombre)
-
-Fig 4. Métrica para CNN y KNN al ser probados con el dataset de 200X y con el dataset aumentado (estos son los que contienen aug en su nombre)
-
-Fig 5. Métrica para CNN y KNN al ser probados con el dataset de 400X y con el dataset aumentado (estos son los que contienen aug en su nombre) 
-
-Fig 6. Comparación de accuracy
-
-Fig 7. Comparación de Precision
-
-Fig 8. Comparación de Recall
-
-Fig 9. Comparación de F1 Score
-
+\newpage
 En las figuras de arriba se puede apreciar los valores obtenidos en el experimento diferenciando entre dos tipos de figura. 
-El primero tipo de figura permite comparar las cuatro métricas usadas (Accuracy, F1 Score, Precision y Recall) entre los distintos modelos entrenados sobre un conjunto de datos en concreto, habiendo cinco figuras para cinco conjuntos de datos distintos, en estas graficas se comparan cuatro estados distintos, CNN sin aumento, para comprobar su robustez ante datos similares, CNN con aumento para observar si es capaz de adaptarse correctamente a datos externos al dataset o datos modificados visualmente, también se observan los resultados del KNN sin aumento de datos para observar si el ajuste de pesos se ha realizado correctamente y KNN con aumento de datos para observar su adaptabilidad a datos anormales en el dataset
-El segundo tipo de figura muestra cómo varía una métrica para todos los modelos que se encuentran para obtener una comparación entorno a las métricas mientras que el primero lo hace entorno a los modelos y experimentos
+El primero tipo de figura (\ref{fig:figura1}, \ref{fig:figura2}, \ref{fig:figura3}, \ref{fig:figura4}, \ref{fig:figura5}) permite comparar las cuatro métricas usadas (Accuracy, F1 Score, Precision y Recall) entre los distintos modelos entrenados sobre un conjunto de datos en concreto, habiendo cinco figuras para cinco conjuntos de datos distintos, en estas gráficas se comparan cuatro estados distintos, CNN sin aumento, para comprobar su robustez ante datos similares, CNN con aumento para observar si es capaz de adaptarse correctamente a datos externos al dataset o datos modificados visualmente, también se observan los resultados del KNN sin aumento de datos para observar si el ajuste de pesos se ha realizado correctamente y KNN con aumento de datos para observar su adaptabilidad a datos anormales en el dataset.
+El segundo tipo de figura (\ref{fig:figura6}, \ref{fig:figura7}, \ref{fig:figura8}, \ref{fig:figura9}) muestra cómo varía una métrica para todos los modelos que se encuentran para obtener una comparación entorno a las métricas mientras que el primero lo hace entorno a los modelos y experimentos.
 
-Se pueden apreciar una seria de hechos que se ven reflejados en las gráficas:
+Se pueden apreciar una serie de hechos que se ven reflejados en las gráficas:
 El primer hecho que se puede observar es la estabilidad de CNN, cuyas métricas se mantiene relativamente constante a lo largo de los distintos tamaños de conjunto de datos. Esto sugiere que el modelo tiene una buena capacidad de generalización, incluso cuando se trabaja con conjuntos más reducidos, y que su rendimiento no depende de manera crítica de la cantidad de muestras disponibles o de la procedencia de las mismas.
 Por otro lado se puede observar tambien la superioridad de KNN en cuanto a las metricas obtenidas sin aumento de datos en comparacion con la inferioridad del mismo cuando se ha realizado un aumento de datos, demostrando que esta muy bien capacitado para realizar un analisis de las imágenes provenientes del mismo conjunto de datos, mejor que el CNN, sin embargo, no es capaz de adaptarse a un entorno nuevo como ha sido al aplicarle aumento de datos a los
 En conclusión, las gráficas muestran claramente cómo el CNN es mas robusto y más adaptable a nuevos entornos mientras KNN se comporta mucho mejor en un entorno en el que ya ha sido entrenado sin embargo no tiene ninguna robustez ni adaptabilidad a nuevos entornos, pudiendo generar grandes fallos a la hora de integrarse en un lugar médico, objetivo final de este proyecto
 Por tanto, teniendo en cuenta los resultados obtenidos y el análisis realizado, en un entorno médico donde la precisión, la robustez y la capacidad de adaptación a datos nuevos o ligeramente modificados son fundamentales, el modelo CNN con aumento de datos se presenta como la opción más adecuada. Su desempeño estable en distintos tamaños de conjunto de datos, junto con su capacidad para generalizar y adaptarse a nuevas condiciones visuales, lo convierten en una herramienta confiable para contextos clínicos reales, donde las imágenes pueden variar en calidad, iluminación o procedencia. A diferencia de KNN, que muestra un buen rendimiento en condiciones controladas pero falla significativamente ante datos no vistos o transformados, CNN garantiza un comportamiento más seguro y consistente, factores esenciales en aplicaciones médicas donde las decisiones automatizadas deben minimizar el riesgo de error.
 
-
+\newpage
 \section{Manual de usuario}
 
 Esta herramienta permite cargar una imagen desde el dispositivo y realizar un análisis para determinar si corresponde a un caso \textbf{benigno} o \textbf{maligno}. Los pasos a seguir son los siguientes:
@@ -312,34 +375,96 @@ Esta herramienta permite cargar una imagen desde el dispositivo y realizar un an
     \item Haz clic en el botón \textbf{Seleccionar Imágenes}.
     \item Navega por tus carpetas y selecciona las imágenes que deseas analizar.
     \item Las imágenes seleccionadas aparecerán en el panel de previsualización.
+    \begin{figure}[!ht]
+        \centering
+        \includegraphics[width=0.4\textwidth]{CargarRuta.png}
+        \caption{Botón para la carga de imágenes}
+        \label{fig:imagen_carga}
+    \end{figure}
 \end{itemize}
 
 \textbf{Opción 2: Arrastrar y Soltar}
 \begin{itemize}
     \item Puedes arrastrar la imagen directamente desde tu explorador de archivos y soltarla en el área indicada de la aplicación.
     \item Las imágenes se cargarán automáticamente en la aplicación.
+    \begin{figure}[!ht]
+        \centering
+        \includegraphics[width=0.4\textwidth]{ArrastrarySoltar.png}
+        \caption{Pantalla de carga de imágenes}
+        \label{fig:imagen_carga_arrastrar}
+    \end{figure}
 \end{itemize}
 
-\subsection*{Paso 2: Iniciar el Análisis}
+\newpage
+\subsection*{Paso 2: Seleccionar el Modelo}
+
+\begin{itemize}
+    \item Una vez que hayas cargado la imagen correctamente, tiene que seleccionar el modelo.
+    \item Arriba a la izquierda de la pantalla, verás un menú desplegable con las opciones de modelos disponibles.
+    \begin{figure}[!ht]
+        \centering
+        \includegraphics[width=0.4\textwidth]{SeleccionarModelo.png}
+        \caption{Menú desplegable para seleccionar el modelo}
+        \label{fig:seleccionar_imagen}
+    \end{figure}
+\end{itemize}
+
+\subsection*{Paso 3: Iniciar el Análisis}
 
 \begin{itemize}
     \item Una vez que hayas cargado la imagen correctamente, haz clic en el botón \textbf{Analizar}.
     \item La aplicación procesará la imagen y mostrará si corresponde a un caso maligno o benigno.
+    \begin{figure}[!ht]
+        \centering
+        \includegraphics[width=0.4\textwidth]{IniciarAnalisis.png}
+        \caption{Botón para iniciar el análisis}
+        \label{fig:iniciar_analisis}
+    \end{figure}
+\end{itemize}
+\newpage
+\textbf{Otras opciones:}
+\begin{itemize}
+    \item Puedes pausar el análisis en cualquier momento haciendo clic en el botón \textbf{Pausar}.
+    \begin{figure}[!ht]
+        \centering
+        \includegraphics[width=0.4\textwidth]{PausarAnalisis.png}
+        \caption{Botón para pausar el análisis}
+        \label{fig:pausar_analisis}
+    \end{figure}
+    \item O si bien lo desea puede reanudar el análisis haciendo clic en el botón \textbf{Reanudar}.
+    \begin{figure}[!ht]
+        \centering
+        \includegraphics[width=0.4\textwidth]{ReanudarAnalisis.png}
+        \caption{Botón para reanudar el análisis}
+        \label{fig:reanudar_analisis}
+    \end{figure}
 \end{itemize}
 
-\subsection*{Paso 3: Ver el Resultado}
+\subsection*{Paso 4: Ver el Resultado}
 
 \begin{itemize}
     \item Después de un breve momento, se mostrará el resultado en pantalla.
     \item Si la imagen es \textbf{benigna}, se mostrará un mensaje y un círculo indicador en color \textcolor{green}{verde}.
     \item Si la imagen es \textbf{maligna}, se mostrará un mensaje y un círculo indicador en color \textcolor{red}{rojo}.
+    \begin{figure}[!ht]
+        \centering
+        \includegraphics[width=0.4\textwidth]{Ver el Resultado.png}
+        \caption{Pantalla de resultado del análisis}
+        \label{fig:resultado}
+    \end{figure}
 \end{itemize}
 
-\subsection*{Paso 4: Realizar Nuevos Análisis}
+\subsection*{Paso 5: Realizar Nuevos Análisis}
 
 \begin{itemize}
-    \item Puedes cargar otras imágenes haciendo clic nuevamente en el botón \textbf{Seleccionar} o arrastrándolas directamente.
+    \item Puede eliminar los resultados dados haciendo clic al boton de \textbf{Eliminar} o bien puede volver a cargar otras imágenes haciendo clic nuevamente en el botón \textbf{Seleccionar} o arrastrándolas directamente.
     \item El proceso de análisis es el mismo para cada imagen que cargues.
+    \begin{figure}[!ht]
+        \centering
+        \includegraphics[width=0.4\textwidth]{EliminarImagenes.png}
+        \caption{Botón para eliminar imágenes}
+        \label{fig:eliminar_imagenes}
+    \end{figure}
 \end{itemize}
 
 
@@ -349,30 +474,62 @@ Aquí van las conclusiones.
 \section{Autoevaluación de cada miembro del equipo}
 \renewcommand{\tablename}{Tabla}
 
-\begin{tabular}{|m{5cm}|m{3.5cm}|m{3.5cm}|m{3.5cm}|}
-    \hline
-    \textbf{Criterio} & \textbf{Lucas Manuel} \newline \textbf{Herencia Solís} & \textbf{Marina Calero} \newline \textbf{López} & \textbf{Juan Antonio} \newline \textbf{Moreno Moguel} \\
-    \hline
-    Comprensión y dominio & Excelente & & Bien\\
-    \hline
-    Exposición didáctica & Excelente & & Excelente\\
-    \hline
-    Integración del equipo & Excelente & & Excelente\\
-    \hline
-    Objetivos & Excelente & & Regular\\
-    \hline
-    Aspectos didácticos & Excelente & & Bien\\
-    \hline
-    Experimentación y conclusiones & Excelente & & Bien\\
-    \hline
-    Contenidos & Excelente & & Bien\\
-    \hline
-    Divulgación de contenidos & Excelente & & Excelente\\
-    \hline
-    Bibliografía / Recursos científicos & Excelente & & Excelente\\
-    \hline
-    
+% \begin{tabular}{|m{5cm}|m{3.5cm}|m{3.5cm}|m{3.5cm}|}
+%     \hline
+%     \textbf{Criterio} & \textbf{Lucas Manuel} \newline \textbf{Herencia Solís} & \textbf{Marina Calero} \newline \textbf{López} & \textbf{Juan Antonio} \newline \textbf{Moreno Moguel} \\
+%     \hline
+%     Comprensión y dominio & Excelente & & Bien\\
+%     \hline
+%     Exposición didáctica & Excelente & & Excelente\\
+%     \hline
+%     Integración del equipo & Excelente & & Excelente\\
+%     \hline
+%     Objetivos & Excelente & & Regular\\
+%     \hline
+%     Aspectos didácticos & Excelente & & Bien\\
+%     \hline
+%     Experimentación y conclusiones & Excelente & & Bien\\
+%     \hline
+%     Contenidos & Excelente & & Bien\\
+%     \hline
+%     Divulgación de contenidos & Excelente & & Excelente\\
+%     \hline
+%     Bibliografía / Recursos científicos & Excelente & & Excelente\\
+%     \hline
+% \end{tabular}
+
+
+
+\begin{table}[ht]
+\centering
+\renewcommand{\arraystretch}{1.5}
+\setlength{\tabcolsep}{6pt}
+\resizebox{\textwidth}{!}{ % Ajusta automáticamente al ancho
+\begin{tabular}{|p{3.5cm}|p{5cm}|c|c|c|} % Ajusté el ancho de la primera columna
+\hline
+\multicolumn{2}{|c|}{\multirow{2}{*}{\textbf{\small Secciones}}} & \multicolumn{3}{c|}{\textbf{Nombre}} \\ \cline{3-5}
+\multicolumn{2}{|c|}{} & \textbf{\footnotesize Lucas M. Herencia Solís} & \textbf{\footnotesize Marina Calero López} & \textbf{\footnotesize Juan A. Moreno Moguel} \\ \hline
+
+\multirow{3}{*}{\makecell{\textbf{\small Exposición}}} 
+    & Compresión y dominio & Excelente & Regular & Bien \\ \cline{2-5}
+    & Exposición didáctica & Excelente & Bien & Excelente \\ \cline{2-5}
+    & Integración equipo & Excelente & Excelente & Excelente \\ \hline
+
+\multirow{3}{*}{\makecell{\textbf{\small Implementación}}} 
+    & Objetivos & Excelente & Bien & Bien \\ \cline{2-5}
+    & Aspectos didácticos & Excelente & Bien & Bien \\ \cline{2-5}
+    & Experimentación y conclusión & Excelente & Excelente & Bien \\ \hline
+
+\multirow{3}{*}{\makecell{\textbf{\small Documentación}}} 
+    & Contenidos & Excelente & Bien & Bien \\ \cline{2-5}
+    & Divulgación de contenidos & Excelente & Excelente & Excelente \\ \cline{2-5}
+    & Bibliografía / Recursos científicos & Excelente & Excelente & Excelente \\ \hline
 \end{tabular}
+}
+\caption{Evaluación del desempeño por secciones}
+\label{tab:evaluacion}
+\end{table}
+
 
 \section{Tabla de tiempos}
 Aquí van las conclusiones.
