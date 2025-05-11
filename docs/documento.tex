@@ -268,9 +268,37 @@ Para llevar a cabo la experimentación, se realizaron pruebas sobre un conjunto 
 
 En esta etapa, se llevará a cabo una comparación de rendimiento entre dos enfoques de clasificación: una red neuronal convolucional (\textit{CNN}) entrenada sobre cada variedad de las imágenes aumentadas y un entrenamiento con todas las imágenes en global, y un modelo \textit{K-Nearest Neighbors} (\textit{KNN}) diseñado de forma personalizada para cada uno de las posibles variaciones de imágenes respecto a su aumento. Esta comparación permitirá observar las diferencias entre un enfoque basado en aprendizaje profundo y otro basado en métodos clásicos de aprendizaje supervisado, en cuanto a métricas de \textit{precisión}, \textit{recall} y \textit{F1-score}.
 
-% TODO: meter comparaciones de características
 A continuación se muestran los resultados de las pruebas realizadas para entender de mejor manera la robustez y adaptabilidad de los distintos modelos
 
+% TODO: meter imagenes de resultados, primero las de la grafica de barras y despues la de puntos
+
+Fig 1. Métrica para CNN y KNN al ser probados con el dataset completo y con el dataset aumentado (estos son los que contienen aug en su nombre)
+
+Fig 2. Métrica para CNN y KNN al ser probados con el dataset de 40X y con el dataset aumentado (estos son los que contienen aug en su nombre)
+
+Fig 3. Métrica para CNN y KNN al ser probados con el dataset de 100X y con el dataset aumentado (estos son los que contienen aug en su nombre)
+
+Fig 4. Métrica para CNN y KNN al ser probados con el dataset de 200X y con el dataset aumentado (estos son los que contienen aug en su nombre)
+
+Fig 5. Métrica para CNN y KNN al ser probados con el dataset de 400X y con el dataset aumentado (estos son los que contienen aug en su nombre) 
+
+Fig 6. Comparación de accuracy
+
+Fig 7. Comparación de Precision
+
+Fig 8. Comparación de Recall
+
+Fig 9. Comparación de F1 Score
+
+En las figuras de arriba se puede apreciar los valores obtenidos en el experimento diferenciando entre dos tipos de figura. 
+El primero tipo de figura permite comparar las cuatro métricas usadas (Accuracy, F1 Score, Precision y Recall) entre los distintos modelos entrenados sobre un conjunto de datos en concreto, habiendo cinco figuras para cinco conjuntos de datos distintos, en estas graficas se comparan cuatro estados distintos, CNN sin aumento, para comprobar su robustez ante datos similares, CNN con aumento para observar si es capaz de adaptarse correctamente a datos externos al dataset o datos modificados visualmente, también se observan los resultados del KNN sin aumento de datos para observar si el ajuste de pesos se ha realizado correctamente y KNN con aumento de datos para observar su adaptabilidad a datos anormales en el dataset
+El segundo tipo de figura muestra cómo varía una métrica para todos los modelos que se encuentran para obtener una comparación entorno a las métricas mientras que el primero lo hace entorno a los modelos y experimentos
+
+Se pueden apreciar una seria de hechos que se ven reflejados en las gráficas:
+El primer hecho que se puede observar es la estabilidad de CNN, cuyas métricas se mantiene relativamente constante a lo largo de los distintos tamaños de conjunto de datos. Esto sugiere que el modelo tiene una buena capacidad de generalización, incluso cuando se trabaja con conjuntos más reducidos, y que su rendimiento no depende de manera crítica de la cantidad de muestras disponibles o de la procedencia de las mismas.
+Por otro lado se puede observar tambien la superioridad de KNN en cuanto a las metricas obtenidas sin aumento de datos en comparacion con la inferioridad del mismo cuando se ha realizado un aumento de datos, demostrando que esta muy bien capacitado para realizar un analisis de las imágenes provenientes del mismo conjunto de datos, mejor que el CNN, sin embargo, no es capaz de adaptarse a un entorno nuevo como ha sido al aplicarle aumento de datos a los
+En conclusión, las gráficas muestran claramente cómo el CNN es mas robusto y más adaptable a nuevos entornos mientras KNN se comporta mucho mejor en un entorno en el que ya ha sido entrenado sin embargo no tiene ninguna robustez ni adaptabilidad a nuevos entornos, pudiendo generar grandes fallos a la hora de integrarse en un lugar médico, objetivo final de este proyecto
+Por tanto, teniendo en cuenta los resultados obtenidos y el análisis realizado, en un entorno médico donde la precisión, la robustez y la capacidad de adaptación a datos nuevos o ligeramente modificados son fundamentales, el modelo CNN con aumento de datos se presenta como la opción más adecuada. Su desempeño estable en distintos tamaños de conjunto de datos, junto con su capacidad para generalizar y adaptarse a nuevas condiciones visuales, lo convierten en una herramienta confiable para contextos clínicos reales, donde las imágenes pueden variar en calidad, iluminación o procedencia. A diferencia de KNN, que muestra un buen rendimiento en condiciones controladas pero falla significativamente ante datos no vistos o transformados, CNN garantiza un comportamiento más seguro y consistente, factores esenciales en aplicaciones médicas donde las decisiones automatizadas deben minimizar el riesgo de error.
 
 
 \section{Manual de usuario}
@@ -325,23 +353,23 @@ Aquí van las conclusiones.
     \hline
     \textbf{Criterio} & \textbf{Lucas Manuel} \newline \textbf{Herencia Solís} & \textbf{Marina Calero} \newline \textbf{López} & \textbf{Juan Antonio} \newline \textbf{Moreno Moguel} \\
     \hline
-    Comprensión y dominio & Excelente & & \\
+    Comprensión y dominio & Excelente & & Bien\\
     \hline
-    Exposición didáctica & Excelente & & \\
+    Exposición didáctica & Excelente & & Excelente\\
     \hline
-    Integración del equipo & Excelente & & \\
+    Integración del equipo & Excelente & & Excelente\\
     \hline
-    Objetivos & Excelente & & \\
+    Objetivos & Excelente & & Regular\\
     \hline
-    Aspectos didácticos & Excelente & & \\
+    Aspectos didácticos & Excelente & & Bien\\
     \hline
-    Experimentación y conclusiones & Excelente & & \\
+    Experimentación y conclusiones & Excelente & & Bien\\
     \hline
-    Contenidos & Excelente & & \\
+    Contenidos & Excelente & & Bien\\
     \hline
-    Divulgación de contenidos & Excelente & & \\
+    Divulgación de contenidos & Excelente & & Excelente\\
     \hline
-    Bibliografía / Recursos científicos & Excelente & & \\
+    Bibliografía / Recursos científicos & Excelente & & Excelente\\
     \hline
     
 \end{tabular}
