@@ -147,6 +147,12 @@ class AnalizadorCancerDeMama:
             self.limpiar_resultados()
             self.imagenes_paths = list(file_paths)
             self.actualizar_interfaz()
+            
+            # Reiniciar estado del análisis
+            self.analizando = False
+            self.current_image_index = 0
+            self.btn_analizar.config(state=tk.NORMAL)
+            self.btn_pausar.config(state=tk.DISABLED, text="Pausar")
 
     def drop_images(self, event):
         file_paths = self.root.tk.splitlist(event.data)
@@ -155,6 +161,12 @@ class AnalizadorCancerDeMama:
             self.limpiar_resultados()
             self.imagenes_paths = file_paths
             self.actualizar_interfaz()
+            
+            # Reiniciar estado del análisis
+            self.analizando = False
+            self.current_image_index = 0
+            self.btn_analizar.config(state=tk.NORMAL)
+            self.btn_pausar.config(state=tk.DISABLED, text="Pausar")
 
     def actualizar_interfaz(self):
         self.entry_ruta.delete(0, tk.END)
@@ -256,6 +268,12 @@ class AnalizadorCancerDeMama:
         self.progress_var.set(0)
         self.actualizar_estadisticas()
         self.canvas_resultado.itemconfig(self.circulo, fill="lightgray")
+        
+        # Reiniciar estado del análisis
+        self.analizando = False
+        self.current_image_index = 0
+        self.btn_analizar.config(state=tk.NORMAL)
+        self.btn_pausar.config(state=tk.DISABLED, text="Pausar")
 
     def limpiar_resultados(self):
         self.resultados = {"Benignas": 0, "Malignas": 0}
