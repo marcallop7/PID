@@ -101,10 +101,10 @@ pip install -r requirements.txt
 python -m venv venv
 
 # Activar entorno (Windows)
-.\env\Scripts\activate
+.\venv\Scripts\activate
 
 # Desactivar entorno (Windows)
-.\env\Scripts\deactivate
+.\venv\Scripts\deactivate
 ```
 
 ---

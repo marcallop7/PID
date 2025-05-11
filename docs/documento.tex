@@ -23,6 +23,7 @@
 \usepackage{rotating}
 \usepackage{adjustbox}
 \usepackage{makecell}
+\usepackage{pdfpages}
 % Personalización del título en la portada
 \newcommand{\customtitlefont}{\fontsize{40pt}{42pt}\selectfont\bfseries} % Cambia el tamaño y estilo
 
@@ -156,6 +157,13 @@ El algoritmo \textbf{K-Nearest Neighbors} (k-NN) es uno de los métodos más sim
 
 La idea fundamental detrás del k-NN es que una instancia se clasifica en función de las clases mayoritarias de sus \textbf{k vecinos más cercanos} en el espacio de características. Para determinar estos vecinos, se calcula la distancia entre la instancia a clasificar y cada punto del conjunto de entrenamiento, siendo la distancia euclidiana la medida más común, aunque otras como la distancia de Manhattan o la distancia de Mahalanobis también son utilizadas dependiendo del contexto del problema \cite{chomboon2015empirical}. \\
 
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{knn.png}
+    \caption{K-Nearest Neighbours \cite{mlarchive_knn}}
+    \label{fig:knn}
+\end{figure}
+
 En el marco de arquitecturas más complejas como las \textbf{Redes Convolucionales} (CNN) o los autoencoders, el k-NN se utiliza frecuentemente como clasificador final sobre las representaciones extraídas por estas redes. Por ejemplo, en lugar de utilizar capas completamente conectadas o \textit{softmax} para la \textbf{clasificación final}, es posible aplicar k-NN sobre el \textbf{espacio latente} de un autoencoder o sobre los mapas de activación extraídos por las capas convolucionales. Esta estrategia es particularmente útil cuando se desea evaluar la \textbf{capacidad discriminativa de la representación aprendida}, independiente de la arquitectura del clasificador \cite{van2009dimensionality}. \\
 
 Una de las principales ventajas del k-NN en estos contextos es su \textbf{robustez} y \textbf{simplicidad}. No requiere entrenamiento adicional una vez se ha obtenido la representación latente, y su rendimiento depende únicamente de la calidad del espacio de características. Esto lo convierte en una herramienta ideal para comparar distintas representaciones, evaluar embeddings o realizar pruebas rápidas sin necesidad de reentrenar redes profunda \cite{bengio2013representation}. \\
@@ -188,12 +196,12 @@ Esta aplicación de escritorio ha sido desarrollada con Python utilizando la bib
 \begin{enumerate}
     \item \textbf{Carga de imágenes eficiente:}  Permite seleccionar múltiples imágenes desde el sistema de archivos o mediante arrastrar y soltar directamente sobre el área de previsualización. Soporta formatos como PNG, JPG, JPEG, BMP y GIF.
 
-    \item \textbf{Previsualización y navegación:} Muestra una imagen ampliada de la muestra seleccionada y un carrete con miniaturas generadas automáticamente, facilitando la revisión manual. Se utiliza \textcolor[HTML]{006400}{PIL.Image} para procesar imágenes y \textcolor[HTML]{006400}{ImageTk.PhotoImage} para su integración en la GUI.
+    \item \textbf{Previsualización y navegación:} Muestra una imagen ampliada de la muestra seleccionada y un carrete con miniaturas generadas automáticamente, facilitando la revisión manual. Se utiliza \textcolor[HTML]{006400}{\texttt{PIL.Image}} para procesar imágenes y \textcolor[HTML]{006400}{\texttt{ImageTk.PhotoImage}} para su integración en la GUI.
     \item \textbf{Selector de modelo de análisis:} Incluye un desplegable con modelos disponibles: KNN y CNN, con variantes según niveles de aumento (40x, 100x, 200x, 400x), permitiendo seleccionar el tipo de entrenamiento más adecuado según la resolución de las imágenes.
     \item \textbf{Ejecución y control del análisis:} 
-    Los análisis se realizan de forma secuencial mediante hilos (\textcolor[HTML]{006400}{threading.Thread}) para mantener la interfaz fluida. Los modelos son invocados a través de funciones importadas desde los módulos \textcolor[HTML]{006400}{knn.py} y \textcolor[HTML]{006400}{cnn.py}, que devuelven una predicción y un color representativo.
+    Los análisis se realizan de forma secuencial mediante hilos (\textcolor[HTML]{006400}{\texttt{threading.Thread}}) para mantener la interfaz fluida. Los modelos son invocados a través de funciones importadas desde los módulos \textcolor[HTML]{006400}{\texttt{knn.py}} y \textcolor[HTML]{006400}{\texttt{cnn.py}}, que devuelven una predicción y un color representativo.
     \item \textbf{Visualización de resultados y estadísticas:}
-    Para cada imagen se muestra el resultado (Benigno/Maligno) con retroalimentación visual (círculo coloreado) y se actualizan las estadísticas globales: cantidad total de imágenes, benignas y malignas. Se incluye también una barra de progreso (\textcolor[HTML]{006400}{ttk.Progressbar}).
+    Para cada imagen se muestra el resultado (Benigno/Maligno) con retroalimentación visual (círculo coloreado) y se actualizan las estadísticas globales: cantidad total de imágenes, benignas y malignas. Se incluye también una barra de progreso (\textcolor[HTML]{006400}{\texttt{ttk.Progressbar}}).
     \item \textbf{Gestión del análisis:} 
     Se ofrecen botones para iniciar, pausar/reanudar y eliminar las imágenes seleccionadas. Los resultados se limpian automáticamente al cargar nuevas imágenes o al reiniciar el análisis.
 \end{enumerate}
@@ -353,20 +361,23 @@ A continuación se muestran los resultados de las pruebas realizadas para entend
 \end{figure}
 
 \newpage
-En las figuras de arriba se puede apreciar los valores obtenidos en el experimento diferenciando entre dos tipos de figura. 
-El primero tipo de figura (\ref{fig:figura1}, \ref{fig:figura2}, \ref{fig:figura3}, \ref{fig:figura4}, \ref{fig:figura5}) permite comparar las cuatro métricas usadas (Accuracy, F1 Score, Precision y Recall) entre los distintos modelos entrenados sobre un conjunto de datos en concreto, habiendo cinco figuras para cinco conjuntos de datos distintos, en estas gráficas se comparan cuatro estados distintos, CNN sin aumento, para comprobar su robustez ante datos similares, CNN con aumento para observar si es capaz de adaptarse correctamente a datos externos al dataset o datos modificados visualmente, también se observan los resultados del KNN sin aumento de datos para observar si el ajuste de pesos se ha realizado correctamente y KNN con aumento de datos para observar su adaptabilidad a datos anormales en el dataset.
-El segundo tipo de figura (\ref{fig:figura6}, \ref{fig:figura7}, \ref{fig:figura8}, \ref{fig:figura9}) muestra cómo varía una métrica para todos los modelos que se encuentran para obtener una comparación entorno a las métricas mientras que el primero lo hace entorno a los modelos y experimentos.
+En la presente experimentación, se evaluaron de manera sistemática los resultados obtenidos por los distintos modelos a través de dos tipos de representaciones gráficas. El primer conjunto de figuras (\ref{fig:figura1}, \ref{fig:figura2}, \ref{fig:figura3}, \ref{fig:figura4}, \ref{fig:figura5}) permite comparar las métricas clave de evaluación (Accuracy, F1 Score, Precision y Recall) entre los modelos entrenados sobre un mismo conjunto de datos, abarcando cinco configuraciones distintas según la magnificación de las imágenes. En estas comparaciones se incluyen cuatro variantes experimentales: CNN sin aumento de datos, para analizar su rendimiento sobre datos similares al entrenamiento; CNN con aumento, para evaluar su capacidad de adaptación ante transformaciones visuales; KNN sin aumento, que permite medir su rendimiento en un entorno cerrado; y KNN con aumento, que sirve para analizar su robustez ante variaciones visuales no vistas durante la generación del espacio latente.
 
-Se pueden apreciar una serie de hechos que se ven reflejados en las gráficas:
-El primer hecho que se puede observar es la estabilidad de CNN, cuyas métricas se mantiene relativamente constante a lo largo de los distintos tamaños de conjunto de datos. Esto sugiere que el modelo tiene una buena capacidad de generalización, incluso cuando se trabaja con conjuntos más reducidos, y que su rendimiento no depende de manera crítica de la cantidad de muestras disponibles o de la procedencia de las mismas.
-Por otro lado se puede observar tambien la superioridad de KNN en cuanto a las metricas obtenidas sin aumento de datos en comparacion con la inferioridad del mismo cuando se ha realizado un aumento de datos, demostrando que esta muy bien capacitado para realizar un analisis de las imágenes provenientes del mismo conjunto de datos, mejor que el CNN, sin embargo, no es capaz de adaptarse a un entorno nuevo como ha sido al aplicarle aumento de datos a los
-En conclusión, las gráficas muestran claramente cómo el CNN es mas robusto y más adaptable a nuevos entornos mientras KNN se comporta mucho mejor en un entorno en el que ya ha sido entrenado sin embargo no tiene ninguna robustez ni adaptabilidad a nuevos entornos, pudiendo generar grandes fallos a la hora de integrarse en un lugar médico, objetivo final de este proyecto
-Por tanto, teniendo en cuenta los resultados obtenidos y el análisis realizado, en un entorno médico donde la precisión, la robustez y la capacidad de adaptación a datos nuevos o ligeramente modificados son fundamentales, el modelo CNN con aumento de datos se presenta como la opción más adecuada. Su desempeño estable en distintos tamaños de conjunto de datos, junto con su capacidad para generalizar y adaptarse a nuevas condiciones visuales, lo convierten en una herramienta confiable para contextos clínicos reales, donde las imágenes pueden variar en calidad, iluminación o procedencia. A diferencia de KNN, que muestra un buen rendimiento en condiciones controladas pero falla significativamente ante datos no vistos o transformados, CNN garantiza un comportamiento más seguro y consistente, factores esenciales en aplicaciones médicas donde las decisiones automatizadas deben minimizar el riesgo de error.
+El segundo conjunto de gráficas(\ref{fig:figura6}, \ref{fig:figura7}, \ref{fig:figura8}, \ref{fig:figura9}) invierte el enfoque, mostrando la evolución de una única métrica a través de todos los modelos disponibles, lo que facilita el análisis transversal del comportamiento de cada enfoque respecto a una métrica concreta. \\
 
-\newpage
+De la interpretación de estas gráficas se desprenden varios aspectos relevantes: 
+
+\begin{itemize}
+    \item En primer lugar, se observa la notable estabilidad del modelo CNN, cuyas métricas se mantienen relativamente constantes independientemente del tamaño del conjunto de datos o de la magnificación, lo que indica una buena capacidad de generalización. Esto refuerza la idoneidad del modelo CNN en contextos clínicos donde la variabilidad de las muestras puede ser alta.
+    \item En segundo lugar, se constata que el enfoque basado en autoencoder + k-NN obtiene un rendimiento superior al del modelo CNN cuando se trabaja sobre datos no aumentados, lo que sugiere una gran eficacia del sistema en contextos cerrados o controlados. Sin embargo, esta ventaja desaparece bruscamente al aplicar técnicas de data augmentation. Las métricas del KNN se degradan significativamente en presencia de transformaciones geométricas o visuales, revelando una importante fragilidad del sistema ante cambios en los datos de entrada.
+\end{itemize}
+
+Esta degradación se atribuye a la alteración de los vectores latentes generados por el autoencoder cuando se introducen variaciones visuales, ya que al introducir cambios visuales el vector latente a analizar por el k-NN es distinto al vector original por lo que puede dar otro valor de clasificación. A diferencia de la CNN, que ajusta sus parámetros internos durante el entrenamiento para acomodar estas variaciones, el sistema basado en k-NN no posee un mecanismo de adaptación, lo que conduce a una pérdida de coherencia en el espacio latente y, por ende, a un descenso en la precisión de la clasificación.\\
+
 \section{Manual de usuario}
 
 Esta herramienta permite cargar una imagen desde el dispositivo y realizar un análisis para determinar si corresponde a un caso \textbf{benigno} o \textbf{maligno}. Los pasos a seguir son los siguientes:
+\newpage
 
 \subsection*{Paso 1: Seleccionar una Imagen}
 
@@ -467,40 +478,23 @@ Esta herramienta permite cargar una imagen desde el dispositivo y realizar un an
     \end{figure}
 \end{itemize}
 
-
+\newpage
 \section{Conclusiones}
-Aquí van las conclusiones.
+Este trabajo ha comparado \textit{dos enfoques} para la clasificación de imágenes histológicas de cáncer de mama: un modelo de red neuronal convolucional (\textbf{CNN}) entrenado de forma supervisada, y un sistema basado en autoencoders convolucionales combinados con el algoritmo k-Nearest Neighbors (\textbf{k-NN}).\\
 
+El modelo CNN ha demostrado ser robusto, estable y eficaz, alcanzando hasta un 82.8\% de precisión con técnicas de \textit{data augmentation}. Esta capacidad de adaptarse a variaciones visuales como cambios en iluminación, orientación o resolución lo hace especialmente adecuado para su uso en situaciones reales, donde las imágenes histológicas pueden variar sustancialmente según el paciente, el escáner o el protocolo de adquisición. Además, su rendimiento ha sido consistente a través de diferentes magnificaciones y configuraciones de entrenamiento, lo que refuerza su fiabilidad como herramienta de soporte en entornos clínicos.\\
+
+En contraste, el enfoque con autoencoder y k-NN mostró un rendimiento excelente en condiciones controladas, llegando hasta un 90.1\% de precisión cuando los datos de prueba eran similares a los de entrenamiento. Sin embargo, su desempeño se degradó de forma significativa al introducir transformaciones visuales, con caídas abruptas en precisión y otras métricas clave. Este fenómeno se explica por el cambio en los vectores latentes generados por el autoencoder cuando se alteran visualmente las imágenes debido a que los cambios visuales alteran los vectores latentes del autoencoder, y al depender de un clasificador externo como k-NN, sin capacidad de adaptación, se pierde coherencia y se reduce la fiabilidad del sistema.\\
+
+Este comportamiento expone una limitación crítica del método k-NN en contextos médicos: la falta de adaptabilidad ante datos no vistos o alterados, lo que puede traducirse en errores diagnósticos si no se gestiona adecuadamente. En un entorno médico, donde las decisiones automáticas pueden tener implicaciones directas sobre la vida del paciente, es indispensable contar con modelos que no solo ofrezcan buenas métricas en laboratorio, sino que mantengan su rendimiento ante variaciones reales y potencialmente imprevistas.\\
+
+Por tanto, el modelo CNN se perfila como la opción más adecuada para aplicaciones clínicas, ofreciendo un balance óptimo entre rendimiento, robustez y adaptabilidad. El enfoque con k-NN, si bien limitado para clasificación directa en entornos abiertos, podría seguir siendo útil en tareas complementarias como la recuperación de imágenes similares, la búsqueda por contenido o como sistema de apoyo en análisis exploratorios.
+
+\newpage
 \section{Autoevaluación de cada miembro del equipo}
 \renewcommand{\tablename}{Tabla}
 
-% \begin{tabular}{|m{5cm}|m{3.5cm}|m{3.5cm}|m{3.5cm}|}
-%     \hline
-%     \textbf{Criterio} & \textbf{Lucas Manuel} \newline \textbf{Herencia Solís} & \textbf{Marina Calero} \newline \textbf{López} & \textbf{Juan Antonio} \newline \textbf{Moreno Moguel} \\
-%     \hline
-%     Comprensión y dominio & Excelente & & Bien\\
-%     \hline
-%     Exposición didáctica & Excelente & & Excelente\\
-%     \hline
-%     Integración del equipo & Excelente & & Excelente\\
-%     \hline
-%     Objetivos & Excelente & & Regular\\
-%     \hline
-%     Aspectos didácticos & Excelente & & Bien\\
-%     \hline
-%     Experimentación y conclusiones & Excelente & & Bien\\
-%     \hline
-%     Contenidos & Excelente & & Bien\\
-%     \hline
-%     Divulgación de contenidos & Excelente & & Excelente\\
-%     \hline
-%     Bibliografía / Recursos científicos & Excelente & & Excelente\\
-%     \hline
-% \end{tabular}
-
-
-
-\begin{table}[ht]
+\begin{table}[!ht]
 \centering
 \renewcommand{\arraystretch}{1.5}
 \setlength{\tabcolsep}{6pt}
@@ -532,8 +526,13 @@ Aquí van las conclusiones.
 
 
 \section{Tabla de tiempos}
-Aquí van las conclusiones.
+\includepdf[pages=-]{Clockify_Time_Report_Summary_01_01_2025-31_12_2025.pdf}  
 
+\includepdf[pages=-]{marinaclockify.pdf}  
+\includepdf[pages=-]{lucasclockify.pdf}
+\includepdf[pages=-]{juanclockify.pdf}
+
+\newpage
 \addcontentsline{toc}{section}{Bibliografía} 
 \printbibliography
 
