@@ -142,7 +142,7 @@ class AnalizadorCancerDeMama:
         self.frame_main.grid_rowconfigure(2, weight=1)
 
     def seleccionar_imagenes(self):
-        file_paths = filedialog.askopenfilenames(filetypes=[("Archivos de imagen", "*.png;*.jpg;*.jpeg;*.bmp;*.gif")])
+        file_paths = filedialog.askopenfilenames(filetypes=[("Archivos de imagen", "*.png;*.jpg;*.jpeg;*.bmp")])
         if file_paths:
             self.limpiar_resultados()
             self.imagenes_paths = list(file_paths)
@@ -156,7 +156,7 @@ class AnalizadorCancerDeMama:
 
     def drop_images(self, event):
         file_paths = self.root.tk.splitlist(event.data)
-        file_paths = [f.strip("{}") for f in file_paths if f.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".gif"))]
+        file_paths = [f.strip("{}") for f in file_paths if f.lower().endswith((".png", ".jpg", ".jpeg", ".bmp"))]
         if file_paths:
             self.limpiar_resultados()
             self.imagenes_paths = file_paths
