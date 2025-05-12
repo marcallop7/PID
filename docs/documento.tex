@@ -123,7 +123,7 @@ x & \text{para } x > 0 \\
 \alpha x & \text{para } x \le 0 
 \end{cases}, \quad
 \alpha = 0.01 \text{ (valor típico)}
-\]. Esta modificación mejora la capacidad de aprendizaje de la red al evitar que las neuronas queden inactivas de manera permanente \cite{maas2013rectifier}. \\
+\] Esta modificación mejora la capacidad de aprendizaje de la red al evitar que las neuronas queden inactivas de manera permanente \cite{maas2013rectifier}. \\
 
 Posteriormente, se emplea una capa de agrupamiento, o pooling, que tiene como objetivo reducir la dimensionalidad espacial de los mapas de activación. Esta reducción permite disminuir el número de parámetros y operaciones computacionales, al tiempo que se mantiene la información más relevante. El agrupamiento también aporta robustez frente a pequeñas variaciones o distorsiones en la entrada \cite{sermanet2013overfeat}. \\
 
@@ -133,11 +133,11 @@ La red concluye con una capa de salida que depende del tipo de problema que se d
 
 El proceso de aprendizaje de una CNN se realiza mediante retropropagación, un algoritmo que ajusta los parámetros de la red a partir del error entre las predicciones y las etiquetas verdaderas. Este error se cuantifica mediante una función de pérdida, siendo la entropía cruzada una de las más utilizadas en problemas de clasificación. A su vez, algoritmos de optimización como Adam o Stochastic Gradient Descent (\textbf{SGD}) se encargan de actualizar los pesos del modelo en cada iteración, guiando el proceso de entrenamiento hacia una solución que minimice la pérdida \cite{kingma2014adam,rumelhart1986learning}. \\
 
-En el apartado de Implementación se describe detalladamente como se ha construido la CNN usada.
+En el apartado de Implementación se describe detalladamente cómo se ha construido la CNN usada.
 
 
 \subsection{Autoencoder}
-La estructura básica de un autoencoder consta de dos componentes principales (como muestra la Figura \ref{fig:autoencoder}): un codificador (\textbf{encoder}) y un decodificador (\textbf{decoder}). El codificador actúa de manera análoga a las primeras capas de una \textit{CNN}, tomando la entrada y transformándose progresivamente en una representación de menor dimensionalidad. Esta representación comprimida se denomina \textbf{espacio latente}, y constituye el núcleo informativo del autoencoder. Es en este espacio donde se concentran las características más relevantes de la entrada, de manera que, incluso tras eliminar redundancias o ruido, se retiene la información esencial \cite{bank2023autoencoders}. \\
+La estructura básica de un autoencoder consta de dos componentes principales (como muestra la Figura \ref{fig:autoencoder}): un codificador (\textbf{encoder}) y un decodificador (\textbf{decoder}). El \textbf{codificador} actúa de manera análoga a las primeras capas de una \textit{CNN}, tomando la entrada y transformándose progresivamente en una representación de menor dimensionalidad. Esta representación comprimida se denomina \textbf{espacio latente}, y constituye el núcleo informativo del autoencoder. Es en este espacio donde se concentran las características más relevantes de la entrada, de manera que, incluso tras eliminar redundancias o ruido, se retiene la información esencial \cite{bank2023autoencoders}. \\
 
 En aplicaciones que integran CNN con autoencoders frecuentemente llamadas \textbf{convolutional autoencoders}, el codificador suele incluir capas convolucionales que permiten aprovechar las estructuras espaciales locales, de forma similar a una CNN estándar. Este diseño no solo reduce la dimensionalidad, sino que también conserva información espacial crítica para la reconstrucción posterior \cite{masci2011stacked}. \\
 
