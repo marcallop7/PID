@@ -153,9 +153,9 @@ El \textbf{decodificador}, por su parte, invierte el proceso realizado por el co
 \end{figure}
 
 \subsection{K-Nearest Neighbours (KNN)}
-El algoritmo \textbf{K-Nearest Neighbors} (k-NN) es uno de los métodos más simples y efectivos dentro del aprendizaje automático supervisado. A diferencia de modelos como las redes neuronales, que requieren un proceso de entrenamiento explícito, el k-NN es un método perezoso (\textit{lazy learner}), es decir, no construye un modelo a priori, sino que realiza la clasificación directamente a partir de los datos de entrenamiento disponibles \cite{cover1967nearest}. \\
+El algoritmo \textbf{K-Nearest Neighbors} (KNN) es uno de los métodos más simples y efectivos dentro del aprendizaje automático supervisado. A diferencia de modelos como las redes neuronales, que requieren un proceso de entrenamiento explícito, el KNN es un método perezoso (\textit{lazy learner}), es decir, no construye un modelo a priori, sino que realiza la clasificación directamente a partir de los datos de entrenamiento disponibles \cite{cover1967nearest}. \\
 
-La idea fundamental detrás del k-NN es que una instancia se clasifica en función de las clases mayoritarias de sus \textbf{k vecinos más cercanos} en el espacio de características. Para determinar estos vecinos, se calcula la distancia entre la instancia a clasificar y cada punto del conjunto de entrenamiento, siendo la distancia euclidiana la medida más común, aunque otras como la distancia de Manhattan o la distancia de Mahalanobis también son utilizadas dependiendo del contexto del problema \cite{chomboon2015empirical}. \\
+La idea fundamental detrás del KNN es que una instancia se clasifica en función de las clases mayoritarias de sus \textbf{k vecinos más cercanos} en el espacio de características. Para determinar estos vecinos, se calcula la distancia entre la instancia a clasificar y cada punto del conjunto de entrenamiento, siendo la distancia euclidiana la medida más común, aunque otras como la distancia de Manhattan o la distancia de Mahalanobis también son utilizadas dependiendo del contexto del problema \cite{chomboon2015empirical}. \\
 
 \begin{figure}[!ht]
     \centering
@@ -164,15 +164,15 @@ La idea fundamental detrás del k-NN es que una instancia se clasifica en funci�
     \label{fig:knn}
 \end{figure}
 
-En el marco de arquitecturas más complejas como las \textbf{Redes Convolucionales} (CNN) o los autoencoders, el k-NN se utiliza frecuentemente como clasificador final sobre las representaciones extraídas por estas redes. Por ejemplo, en lugar de utilizar capas completamente conectadas o \textit{softmax} para la \textbf{clasificación final}, es posible aplicar k-NN sobre el \textbf{espacio latente} de un autoencoder o sobre los mapas de activación extraídos por las capas convolucionales. Esta estrategia es particularmente útil cuando se desea evaluar la \textbf{capacidad discriminativa de la representación aprendida}, independiente de la arquitectura del clasificador \cite{van2009dimensionality}. \\
+En el marco de arquitecturas más complejas como las \textbf{Redes Convolucionales} (CNN) o los autoencoders, el KNN se utiliza frecuentemente como clasificador final sobre las representaciones extraídas por estas redes. Por ejemplo, en lugar de utilizar capas completamente conectadas o \textit{softmax} para la \textbf{clasificación final}, es posible aplicar KNN sobre el \textbf{espacio latente} de un autoencoder o sobre los mapas de activación extraídos por las capas convolucionales. Esta estrategia es particularmente útil cuando se desea evaluar la \textbf{capacidad discriminativa de la representación aprendida}, independiente de la arquitectura del clasificador \cite{van2009dimensionality}. \\
 
-Una de las principales ventajas del k-NN en estos contextos es su \textbf{robustez} y \textbf{simplicidad}. No requiere entrenamiento adicional una vez se ha obtenido la representación latente, y su rendimiento depende únicamente de la calidad del espacio de características. Esto lo convierte en una herramienta ideal para comparar distintas representaciones, evaluar embeddings o realizar pruebas rápidas sin necesidad de reentrenar redes profunda \cite{bengio2013representation}. \\
+Una de las principales ventajas del KNN en estos contextos es su \textbf{robustez} y \textbf{simplicidad}. No requiere entrenamiento adicional una vez se ha obtenido la representación latente, y su rendimiento depende únicamente de la calidad del espacio de características. Esto lo convierte en una herramienta ideal para comparar distintas representaciones, evaluar embeddings o realizar pruebas rápidas sin necesidad de reentrenar redes profunda \cite{bengio2013representation}. \\
 
 Sin embargo, KNN también presenta limitaciones. Su eficiencia computacional disminuye cuando el número de muestras o la dimensionalidad del espacio de características es muy alta un problema conocido como la "\textit{maldición de la dimensionalidad}". Por ello, su uso suele estar precedido por una etapa de reducción de dimensionalidad o extracción de características, como las proporcionadas por autoencoders o CNN, que ayudan a preservar solo la información más relevante \cite{aggarwal2014data}. \\
 
 \newpage
 \section{Implementación}
-El desarrollo de este proyecto se fundamenta en el uso de técnicas de aprendizaje automático y profundo para la clasificación de imágenes histológicas de cáncer de mama. Con el objetivo de comparar el rendimiento entre distintos enfoques, se han implementado y entrenado dos tipos de modelos: el primero, una CNN, y el segundo, un autoencoder del cual se obtiene la capa de menor dimensionalidad o \textit{bottleneck} y usando después un clasificador K-Nearest neighbours para obtener el resultado. Ambos modelos han sido entrenados utilizando un conjunto de imágenes histológicas públicamente disponibles.\\
+El desarrollo de este proyecto se fundamenta en el uso de técnicas de aprendizaje automático y profundo para la clasificación de imágenes histológicas de cáncer de mama. Con el objetivo de comparar el rendimiento entre distintos enfoques, se han implementado y entrenado dos tipos de modelos: el primero, una CNN, y el segundo, un autoencoder del cual se obtiene la capa de menor dimensionalidad o \textit{bottleneck} y usando después un clasificador KNN para obtener el resultado. Ambos modelos han sido entrenados utilizando un conjunto de imágenes histológicas públicamente disponibles.\\
 
 \subsection{Descripción del dataset}
 Para el desarrollo de este proyecto se utilizó el \textbf{dataset de imágenes histológicas de cáncer de mama BreaKHis} \cite{google_drive_folder}, asociado al trabajo de \cite{bardou2018classification}, ampliamente reconocido en la literatura científica por su utilidad en investigaciones de diagnóstico asistido por computadora en cáncer de mama. Este dataset contiene un total de 9,109 imágenes histopatológicas de tejido tumoral mamario, recolectadas de 82 pacientes en \cite{spanhol2015dataset}.\\
@@ -249,7 +249,7 @@ Para realizar la clasificación de una nueva imagen, se sigue el siguiente proce
 
 \end{enumerate}
 
-Este enfoque no requiere un entrenamiento explícito del clasificador, ya que el método k-NN funciona de forma \textbf{perezosa} (lazy learning) y opera directamente sobre las instancias almacenadas. Gracias a la alta calidad de las características extraídas por el autoencoder, el sistema logra clasificaciones precisas sin necesidad de arquitecturas más complejas.
+Este enfoque no requiere un entrenamiento explícito del clasificador, ya que el método KNN funciona de forma \textbf{perezosa} (lazy learning) y opera directamente sobre las instancias almacenadas. Gracias a la alta calidad de las características extraídas por el autoencoder, el sistema logra clasificaciones precisas sin necesidad de arquitecturas más complejas.
 
 \subsection{Evaluación del Sistema}
 Los modelos fueron evaluados mediante un conjunto de métricas de clasificación binaria, entendiendo que los benignos serán los casos negativos y los malignos los casos positivos:
@@ -369,10 +369,10 @@ De la interpretación de estas gráficas se desprenden varios aspectos relevante
 
 \begin{itemize}
     \item En primer lugar, se observa la notable estabilidad del modelo CNN, cuyas métricas se mantienen relativamente constantes independientemente del tamaño del conjunto de datos o de la magnificación, lo que indica una buena capacidad de generalización. Esto refuerza la idoneidad del modelo CNN en contextos clínicos donde la variabilidad de las muestras puede ser alta.
-    \item En segundo lugar, se constata que el enfoque basado en autoencoder + k-NN obtiene un rendimiento superior al del modelo CNN cuando se trabaja sobre datos no aumentados, lo que sugiere una gran eficacia del sistema en contextos cerrados o controlados. Sin embargo, esta ventaja desaparece bruscamente al aplicar técnicas de data augmentation. Las métricas del KNN se degradan significativamente en presencia de transformaciones geométricas o visuales, revelando una importante fragilidad del sistema ante cambios en los datos de entrada.
+    \item En segundo lugar, se constata que el enfoque basado en autoencoder + KNN obtiene un rendimiento superior al del modelo CNN cuando se trabaja sobre datos no aumentados, lo que sugiere una gran eficacia del sistema en contextos cerrados o controlados. Sin embargo, esta ventaja desaparece bruscamente al aplicar técnicas de data augmentation. Las métricas del KNN se degradan significativamente en presencia de transformaciones geométricas o visuales, revelando una importante fragilidad del sistema ante cambios en los datos de entrada.
 \end{itemize}
 
-Esta degradación se atribuye a la alteración de los vectores latentes generados por el autoencoder cuando se introducen variaciones visuales, ya que al introducir cambios visuales el vector latente a analizar por el k-NN es distinto al vector original por lo que puede dar otro valor de clasificación. A diferencia de la CNN, que ajusta sus parámetros internos durante el entrenamiento para acomodar estas variaciones, el sistema basado en k-NN no posee un mecanismo de adaptación, lo que conduce a una pérdida de coherencia en el espacio latente y, por ende, a un descenso en la precisión de la clasificación.\\
+Esta degradación se atribuye a la alteración de los vectores latentes generados por el autoencoder cuando se introducen variaciones visuales, ya que al introducir cambios visuales el vector latente a analizar por el KNN es distinto al vector original por lo que puede dar otro valor de clasificación. A diferencia de la CNN, que ajusta sus parámetros internos durante el entrenamiento para acomodar estas variaciones, el sistema basado en KNN no posee un mecanismo de adaptación, lo que conduce a una pérdida de coherencia en el espacio latente y, por ende, a un descenso en la precisión de la clasificación.\\
 
 \section{Manual de usuario}
 
@@ -480,15 +480,15 @@ Esta herramienta permite cargar una imagen desde el dispositivo y realizar un an
 
 \newpage
 \section{Conclusiones}
-Este trabajo ha comparado \textit{dos enfoques} para la clasificación de imágenes histológicas de cáncer de mama: un modelo de red neuronal convolucional (\textbf{CNN}) entrenado de forma supervisada, y un sistema basado en autoencoders convolucionales combinados con el algoritmo k-Nearest Neighbors (\textbf{k-NN}).\\
+Este trabajo ha comparado \textit{dos enfoques} para la clasificación de imágenes histológicas de cáncer de mama: un modelo de red neuronal convolucional (\textbf{CNN}) entrenado de forma supervisada, y un sistema basado en autoencoders convolucionales combinados con el algoritmo k-Nearest Neighbors (\textbf{KNN}).\\
 
 El modelo CNN ha demostrado ser robusto, estable y eficaz, alcanzando hasta un 82.8\% de precisión con técnicas de \textit{data augmentation}. Esta capacidad de adaptarse a variaciones visuales como cambios en iluminación, orientación o resolución lo hace especialmente adecuado para su uso en situaciones reales, donde las imágenes histológicas pueden variar sustancialmente según el paciente, el escáner o el protocolo de adquisición. Además, su rendimiento ha sido consistente a través de diferentes magnificaciones y configuraciones de entrenamiento, lo que refuerza su fiabilidad como herramienta de soporte en entornos clínicos.\\
 
-En contraste, el enfoque con autoencoder y k-NN mostró un rendimiento excelente en condiciones controladas, llegando hasta un 90.1\% de precisión cuando los datos de prueba eran similares a los de entrenamiento. Sin embargo, su desempeño se degradó de forma significativa al introducir transformaciones visuales, con caídas abruptas en precisión y otras métricas clave. Este fenómeno se explica por el cambio en los vectores latentes generados por el autoencoder cuando se alteran visualmente las imágenes debido a que los cambios visuales alteran los vectores latentes del autoencoder, y al depender de un clasificador externo como k-NN, sin capacidad de adaptación, se pierde coherencia y se reduce la fiabilidad del sistema.\\
+En contraste, el enfoque con autoencoder y KNN mostró un rendimiento excelente en condiciones controladas, llegando hasta un 90.1\% de precisión cuando los datos de prueba eran similares a los de entrenamiento. Sin embargo, su desempeño se degradó de forma significativa al introducir transformaciones visuales, con caídas abruptas en precisión y otras métricas clave. Este fenómeno se explica por el cambio en los vectores latentes generados por el autoencoder cuando se alteran visualmente las imágenes debido a que los cambios visuales alteran los vectores latentes del autoencoder, y al depender de un clasificador externo como KNN, sin capacidad de adaptación, se pierde coherencia y se reduce la fiabilidad del sistema.\\
 
-Este comportamiento expone una limitación crítica del método k-NN en contextos médicos: la falta de adaptabilidad ante datos no vistos o alterados, lo que puede traducirse en errores diagnósticos si no se gestiona adecuadamente. En un entorno médico, donde las decisiones automáticas pueden tener implicaciones directas sobre la vida del paciente, es indispensable contar con modelos que no solo ofrezcan buenas métricas en laboratorio, sino que mantengan su rendimiento ante variaciones reales y potencialmente imprevistas.\\
+Este comportamiento expone una limitación crítica del método KNN en contextos médicos: la falta de adaptabilidad ante datos no vistos o alterados, lo que puede traducirse en errores diagnósticos si no se gestiona adecuadamente. En un entorno médico, donde las decisiones automáticas pueden tener implicaciones directas sobre la vida del paciente, es indispensable contar con modelos que no solo ofrezcan buenas métricas en laboratorio, sino que mantengan su rendimiento ante variaciones reales y potencialmente imprevistas.\\
 
-Por tanto, el modelo CNN se perfila como la opción más adecuada para aplicaciones clínicas, ofreciendo un balance óptimo entre rendimiento, robustez y adaptabilidad. El enfoque con k-NN, si bien limitado para clasificación directa en entornos abiertos, podría seguir siendo útil en tareas complementarias como la recuperación de imágenes similares, la búsqueda por contenido o como sistema de apoyo en análisis exploratorios.
+Por tanto, el modelo CNN se perfila como la opción más adecuada para aplicaciones clínicas, ofreciendo un balance óptimo entre rendimiento, robustez y adaptabilidad. El enfoque con KNN, si bien limitado para clasificación directa en entornos abiertos, podría seguir siendo útil en tareas complementarias como la recuperación de imágenes similares, la búsqueda por contenido o como sistema de apoyo en análisis exploratorios.
 
 \newpage
 \section{Autoevaluación de cada miembro del equipo}
@@ -526,6 +526,10 @@ Por tanto, el modelo CNN se perfila como la opción más adecuada para aplicacio
 
 
 \section{Tabla de tiempos}
+A continuación se presenta la tabla de tiempos dedicados por cada miembro del equipo a lo largo del desarrollo del proyecto.\\
+
+Primero se pondrá una tabla resumen con el tiempo total dedicado por cada miembro del equipo a dicha tarea en especifico, y posteriormente se incluirán los informes de cada uno de los miembros del equipo de manera más detalla y con la descripción clara de dicha tarea.\\
+
 \includepdf[pages=-]{Clockify_Time_Report_Summary_01_01_2025-31_12_2025.pdf}  
 
 \includepdf[pages=-]{marinaclockify.pdf}  
