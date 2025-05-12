@@ -67,7 +67,7 @@ Este proyecto se enmarca en la asignatura de Procesamiento de Imágenes Digitale
 
 % CONTENIDO
 \section{Introducción}
-El cáncer de mama es una de las principales causas de mortalidad en el mundo, habiendo sido la responsable de 670.000 muertes en 2022 siendo a su vez el tipo de cáncer más común en las mujeres según el articulo de \cite{who_breast_cancer}. Esto provoca que durante los últimos años se haya estado realizando una labor social enorme referente a la concienciación sobre el cáncer de mama dando gran importancia a su pronta detección.\\
+El cáncer de mama es una de las principales causas de mortalidad en el mundo, habiendo sido la responsable de 670.000 muertes en 2022 siendo a su vez el tipo de cáncer más común en las mujeres según el articulo \cite{who_breast_cancer}. Esto provoca que durante los últimos años se haya estado realizando una labor social enorme referente a la concienciación sobre el cáncer de mama dando gran importancia a su pronta detección.\\
 
 \begin{figure}[!ht]
     \centering
@@ -186,7 +186,7 @@ BreaKHis está dividido en dos clases principales: tumores \textbf{benignos} (2,
     \item \textbf{Malignos:} Carcinoma ductal (DC), Carcinoma lobulillar (LC), Carcinoma mucinoso (MC) y Carcinoma papilar (PC).
 \end{itemize}
 
-En esta investigación se utilizó una versión del dataset disponible públicamente en \cite{google_drive_folder}, la cual se encuentra organizada de forma estructurada para entrenamiento, validación y evaluación, dividiéndose a su vez en magnificación y tipo, lo que facilitó la gestión y preparación de los datos para el entrenamiento de los modelos. \\
+En esta investigación se utilizó una versión del dataset disponible públicamente \cite{google_drive_folder}, la cual se encuentra organizada de forma estructurada para entrenamiento, validación y evaluación, dividiéndose a su vez en magnificación y tipo, lo que facilitó la gestión y preparación de los datos para el entrenamiento de los modelos. \\
 
 \subsection{Arquitectura de la aplicación}
 Esta aplicación de escritorio ha sido desarrollada con Python utilizando la biblioteca \textbf{Tkinter} y la extensión \textbf{tkinterdnd2} para soporte de arrastrar y soltar. Está diseñada para facilitar el análisis automatizado de imágenes microscópicas de tejidos mamarios, permitiendo la clasificación entre lesiones benignas y malignas mediante modelos de machine learning. La interfaz ofrece una experiencia visual amigable y funcional para profesionales o investigadores del área médica.\\
@@ -197,7 +197,7 @@ Esta aplicación de escritorio ha sido desarrollada con Python utilizando la bib
     \item \textbf{Carga de imágenes eficiente:}  Permite seleccionar múltiples imágenes desde el sistema de archivos o mediante arrastrar y soltar directamente sobre el área de previsualización. Soporta formatos como PNG, JPG, JPEG, BMP y GIF.
 
     \item \textbf{Previsualización y navegación:} Muestra una imagen ampliada de la muestra seleccionada y un carrete con miniaturas generadas automáticamente, facilitando la revisión manual. Se utiliza \textcolor[HTML]{006400}{\texttt{PIL.Image}} para procesar imágenes y \textcolor[HTML]{006400}{\texttt{ImageTk.PhotoImage}} para su integración en la GUI.
-    \item \textbf{Selector de modelo de análisis:} Incluye un desplegable con modelos disponibles: KNN y CNN, con variantes según niveles de aumento (40x, 100x, 200x, 400x), permitiendo seleccionar el tipo de entrenamiento más adecuado según la resolución de las imágenes, las cuales tienen una sección experimental que mezcla todos los aumentos.
+    \item \textbf{Selector de modelo de análisis:} Incluye un desplegable con modelos disponibles: KNN y CNN, con variantes según niveles de aumento (40x, 100x, 200x, 400x), permitiendo seleccionar el tipo de entrenamiento más adecuado según la resolución de las imágenes, además de una sección experimental para cada modelo en la que se tomo del entrenamiento con mezcla todos los aumentos como entrada.
     \item \textbf{Ejecución y control del análisis:} 
     Los análisis se realizan de forma secuencial mediante hilos (\textcolor[HTML]{006400}{\texttt{threading.Thread}}) para mantener la interfaz fluida. Los modelos son invocados a través de funciones importadas desde los módulos \textcolor[HTML]{006400}{\texttt{knn.py}} y \textcolor[HTML]{006400}{\texttt{cnn.py}}, que devuelven una predicción y un color representativo.
     \item \textbf{Visualización de resultados y estadísticas:}
@@ -219,7 +219,7 @@ A la salida de las capas convolucionales, los mapas de activación se aplanan me
 
 Finalmente, el modelo puede entrenarse sobre imágenes con distintas magnificaciones o bien utilizando un conjunto combinado, y se proporciona la funcionalidad para guardar tanto el modelo completo como únicamente los pesos aprendidos. Esta flexibilidad resulta útil tanto para entrenamientos posteriores como para su integración en entornos clínicos.\\
 
-Al finalizar el proceso de entrenamiento, se generan 5 archivos con el mismo modelos y con los pesos obtenidos tras el entrenamiento, cada uno de estos se ha entrenado con un conjunto de datos distintos, ya sea con todos los datos, con los de magnificación 40X, 100X, 200X o 400X. 
+Al finalizar el proceso de entrenamiento, se generan a partir del mismo modelo 5 archivos con los pesos obtenidos tras el entrenamiento, cada uno de estos se ha entrenado con un conjunto de datos distintos, ya sea utilizando la totalidad de los datos disponibles o únicamente aquellos correspondientes a una de las magnificaciones específicas: 40X, 100X, 200X o 400X. 
 
 \subsection{Arquitectura KNN}
 Se emplea un autoencoder convolucional basado en el artículo \cite{minarno2021cnn} para la recuperación de imágenes histológicas de cáncer de mama. Este modelo, compuesto por un codificador y un decodificador, extrae representaciones latentes útiles para clasificación o búsqueda por similitud. Se entrena minimizando el error de reconstrucción mediante optimizadores como Adam, utilizando conjuntos de entrenamiento. Este tipo de red se caracteriza por una estructura simétrica compuesta por dos partes principales: el codificador y el decodificador.. \\
@@ -229,7 +229,7 @@ Se emplea un autoencoder convolucional basado en el artículo \cite{minarno2021c
     \item \textbf{Decodificación (Decoder):} intenta reconstruir la imagen original a partir de esta representación comprimida, utilizando capas de upsampling y convolucionales dispuestas simétricamente respecto al codificador. El entrenamiento del autoencoder se realiza minimizando el error cuadrático medio (MSE) entre la imagen de entrada y su reconstrucción, obligando así al modelo a aprender una codificación eficiente y significativa.
 \end{enumerate}
 
-Tras el proceso de extracción de características mediante el autoencoder convolucional, cada imagen del conjunto de datos es transformada en un vector latente de 48 dimensiones, que representa las características más relevantes de la imagen histológica en un espacio comprimido. Estos vectores latentes, junto con su etiqueta de clase correspondiente (por ejemplo, benigno o maligno), se almacenan en un archivo \textbf{JSON} que actúa como base de datos para el sistema de clasificación.\\
+Tras el proceso de extracción de características mediante el autoencoder convolucional gracias a su capa de encoder, cada imagen del conjunto de datos es transformada en un vector latente de 48 dimensiones, que representa las características más relevantes de la imagen histológica en un espacio comprimido. Estos vectores latentes, junto con su etiqueta de clase correspondiente (por ejemplo, benigno o maligno), se almacenan en un archivo \textbf{JSON} que actúa como base de datos para el sistema de clasificación.\\
 
 Para realizar la clasificación de una nueva imagen, se sigue el siguiente procedimiento:
 
