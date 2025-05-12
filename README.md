@@ -15,6 +15,8 @@ Este proyecto permite clasificar imágenes de células como **benignas** o **mal
 
 ## 📁 Descarga de Datasets e Instalación Inicial
 
+**Nota:** La carpeta `images_prueba_profesor` contiene un menor conjunto de imágenes en caso de que el profesor prefiriese utilizarlas para las pruebas de la aplicación. Estás están estructuradas de forma similar al resto de carpetas de imágenes, estando inicialmente divididas por su magnificación (40x, 100x, 200x o 400x) e internamente en benignas o malignas. 
+
 ### 1. Descargar imágenes para entrenamiento
 
 Descarga el conjunto de datos desde el siguiente enlace:
